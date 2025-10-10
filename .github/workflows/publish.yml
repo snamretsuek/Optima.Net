@@ -55,7 +55,9 @@ jobs:
       # Publish to NuGet.org
       - name: Push NuGet package to NuGet.org
         run: |
-          dotnet nuget push ./nupkgs/Optima.Net.*.nupkg \
-            --source "https://api.nuget.org/v3/index.json" \
-            --api-key ${{ secrets.NUGETDOTORG }} \
-            --skip-duplicate
+          dotnet nuget locals all --clear
+          dotnet nuget push "./nupkgs/Optima.Net.*.nupkg" \
+          --source "https://api.nuget.org/v3/index.json" \
+          --api-key "${{ secrets.NUGETDOTORG }}" \
+          --skip-duplicate \
+          --no-service-endpoint-redirects
