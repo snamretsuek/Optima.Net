@@ -56,8 +56,20 @@ jobs:
       - name: Push NuGet package to NuGet.org
         run: |
           dotnet nuget locals all --clear
-          dotnet nuget push "./nupkgs/Optima.Net.*.nupkg" \
-          --source "https://api.nuget.org/v3/index.json" \
-          --api-key "${{ secrets.NUGETDOTORG }}" \
-          --skip-duplicate \
-          --no-service-endpoint
+
+      # Create a clean NuGet.config to avoid v2 fallback
+      cat > ./nuget.config <<'EOF'
+      <?xml version="1.0" encoding="utf-8"?>
+      <configuration>
+        <packageSources>
+          <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
+        </packageSources>
+      </configuration>
+      EOF
+
+      # Push package explicitly using the clean config
+      dotnet nuget push "./nupkgs/Optima.Net.*.nupkg" \
+        --configfile ./nuget.config \
+        --source "nuget.org" \
+        --api-key "${{ secrets.NUGETDOTORG }}" \
+        --skip-duplicate
