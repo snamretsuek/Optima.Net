@@ -60,4 +60,4 @@ jobs:
           --source "https://api.nuget.org/v3/index.json" \
           --api-key "${{ secrets.NUGETDOTORG }}" \
           --skip-duplicate \
-          --no-service-endpoint-redirects
+          --no-service-endpoint
