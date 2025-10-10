@@ -1,42 +1,47 @@
 name: Build and Publish NuGet Package
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:   # Manual trigger only
 
 permissions:
-  id-token: write        # 👈 Required for Trusted Publishing
   contents: read
   packages: write
 
 jobs:
   build-and-pack:
     runs-on: ubuntu-latest
-    environment: production
+    environment: production   # Keep the environment
 
     steps:
+      # Checkout the repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup .NET SDK
+      # Setup .NET SDK
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
+      # Restore dependencies
       - name: Restore dependencies
         run: dotnet restore ./src/Optima.Net/Optima.Net.csproj
 
+      # Build project
       - name: Build project
         run: dotnet build ./src/Optima.Net/Optima.Net.csproj --configuration Release --no-restore
 
+      # Pack NuGet package
       - name: Pack NuGet package
         run: dotnet pack ./src/Optima.Net/Optima.Net.csproj --configuration Release --output ./nupkgs --no-build
 
+      # Debug: List nupkg files
       - name: List nupkg files
         run: ls -l ./nupkgs
 
-      # ✅ Push package to NuGet.org via Trusted Publishing (no API key!)
-      - name: Publish package to NuGet.org
-        run: |
-          dotnet nuget push "./nupkgs/*.nupkg" \
-            --source "https://api.nuget.org/v3/index.json" \
-            --skip-duplicate
+      # Upload nupkg as an artifact for manual download
+      - name: Upload NuGet package artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Optima.Net-packages
+          path: ./nupkgs/*.nupkg
