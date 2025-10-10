@@ -67,6 +67,21 @@ namespace Optima.Net.Extensions
                 ? optional
                 : Optional<T>.None();
         }
+
+        /// <summary>
+        /// Filters an Optional asynchronously based on a predicate that returns a Task<bool>.
+        /// Returns None if the Optional has no value or the predicate evaluates to false.
+        /// </summary>
+        public static async Task<Optional<T>> WhereAsync<T>(
+            this Optional<T> optional,
+            Func<T, Task<bool>> predicate)
+        {
+            if (!optional.HasValue)
+                return Optional<T>.None();
+
+            var result = await predicate(optional.Value);
+            return result ? optional : Optional<T>.None();
+        }
     }
 }
-}
+
