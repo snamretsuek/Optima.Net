@@ -27,15 +27,15 @@ jobs:
 
       # Restore dependencies
       - name: Restore dependencies
-        run: dotnet restore ./Optima.Net/Optima.Net.csproj
+        run: dotnet restore ./src/Optima.Net/Optima.Net.csproj
 
       # Build project
       - name: Build
-        run: dotnet build ./Optima.Net/Optima.Net.csproj --configuration Release --no-restore
+        run: dotnet build ./src/Optima.Net/Optima.Net.csproj --configuration Release --no-restore
 
       # Pack project into a NuGet package
       - name: Pack NuGet package
-        run: dotnet pack ./Optima.Net/Optima.Net.csproj --configuration Release --output ./nupkgs --no-build
+        run: dotnet pack ./src/Optima.Net/Optima.Net.csproj --configuration Release --output ./nupkgs --no-build
 
       # Optional: Publish to GitHub Packages
       - name: Push NuGet package to GitHub Packages
