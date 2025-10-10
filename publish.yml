@@ -1,0 +1,47 @@
+name: Build and Pack NuGet
+
+  # on:
+  # push:
+  #   branches:
+  #     - master
+  # pull_request:
+  #   branches:
+  #     - master
+on:
+  workflow_dispatch:   # Only manual trigger
+
+jobs:
+  build-and-pack:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Setup .NET
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x' # or whichever SDK you are using
+
+      # Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore ./Optima.Net/Optima.Net.csproj
+
+      # Build project
+      - name: Build
+        run: dotnet build ./Optima.Net/Optima.Net.csproj --configuration Release --no-restore
+
+      # Pack project into a NuGet package
+      - name: Pack NuGet package
+        run: dotnet pack ./Optima.Net/Optima.Net.csproj --configuration Release --output ./nupkgs --no-build
+
+      # Optional: Publish to GitHub Packages
+      - name: Push NuGet package to GitHub Packages
+        uses: nuget/setup-nuget@v1
+      - run: |
+          dotnet nuget push ./nupkgs/Optima.Net.*.nupkg \
+            --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+            --api-key ${{ secrets.GITHUB_TOKEN }} \
+            --skip-duplicate
