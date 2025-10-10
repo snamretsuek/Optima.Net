@@ -23,9 +23,21 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      # Create clean NuGet.config
+      - name: Create clean NuGet.config
+        run: |
+          cat > ./nuget.config <<'EOF'
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
+  </packageSources>
+</configuration>
+EOF
+
       # Restore dependencies
       - name: Restore dependencies
-        run: dotnet restore ./src/Optima.Net/Optima.Net.csproj
+        run: dotnet restore ./src/Optima.Net/Optima.Net.csproj --configfile ./nuget.config
 
       # Build project
       - name: Build project
