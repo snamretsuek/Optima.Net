@@ -3,74 +3,40 @@ name: Build and Publish NuGet Package
 on:
   workflow_dispatch:
 
+permissions:
+  id-token: write        # 👈 Required for Trusted Publishing
+  contents: read
+  packages: write
+
 jobs:
   build-and-pack:
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
-      # Checkout the repo
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Setup .NET SDK
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      # Restore dependencies
       - name: Restore dependencies
         run: dotnet restore ./src/Optima.Net/Optima.Net.csproj
 
-      # Build project
       - name: Build project
         run: dotnet build ./src/Optima.Net/Optima.Net.csproj --configuration Release --no-restore
 
-      # Pack project into a NuGet package
       - name: Pack NuGet package
         run: dotnet pack ./src/Optima.Net/Optima.Net.csproj --configuration Release --output ./nupkgs --no-build
 
-      # Debug: List packages
       - name: List nupkg files
         run: ls -l ./nupkgs
 
-      # Sanity check: ensure secret exists
-      - name: Check NUGETDOTORG secret
+      # ✅ Push package to NuGet.org via Trusted Publishing (no API key!)
+      - name: Publish package to NuGet.org
         run: |
-          if [ -z "${{ secrets.NUGETDOTORG }}" ]; then
-            echo "❌ ERROR: NUGETDOTORG secret is missing or empty."
-            exit 1
-          fi
-          echo "✅ NUGETDOTORG secret found."
-
-      # Optional: Publish to GitHub Packages
-      - name: Push package to GitHub Packages
-        if: false  # disable for now, set to true if needed
-        run: |
-          dotnet nuget push ./nupkgs/Optima.Net.*.nupkg \
-            --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
-            --api-key ${{ secrets.NUGET_PUBLISH_TOKEN }} \
-            --skip-duplicate
-
-      # Push package to NuGet.org
-      - name: Push package to NuGet.org
-        run: |
-          echo "Clearing NuGet caches..."
-          dotnet nuget locals all --clear
-
-          echo "Creating clean NuGet.config..."
-          cat > ./nuget.config <<'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <configuration>
-            <packageSources>
-              <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
-            </packageSources>
-          </configuration>
-          EOF
-
-          echo "Pushing package to NuGet.org..."
-          dotnet nuget push "./nupkgs/Optima.Net.*.nupkg" \
-            --configfile ./nuget.config \
-            --source "nuget.org" \
-            --api-key "${{ secrets.NUGETDOTORG }}" \
+          dotnet nuget push "./nupkgs/*.nupkg" \
+            --source "https://api.nuget.org/v3/index.json" \
             --skip-duplicate
