@@ -1,14 +1,8 @@
 name: Build and Pack NuGet
 
-  # on:
-  # push:
-  #   branches:
-  #     - master
-  # pull_request:
-  #   branches:
-  #     - master
+# Only manual trigger
 on:
-  workflow_dispatch:   # Only manual trigger
+  workflow_dispatch:
 
 jobs:
   build-and-pack:
@@ -23,7 +17,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x' # or whichever SDK you are using
+          dotnet-version: '8.0.x'
 
       # Restore dependencies
       - name: Restore dependencies
@@ -37,6 +31,18 @@ jobs:
       - name: Pack NuGet package
         run: dotnet pack ./src/Optima.Net/Optima.Net.csproj --configuration Release --output ./nupkgs --no-build
 
+      # Debug: Verify package exists
+      - name: List nupkg files
+        run: ls -l ./nupkgs
+
+      # Debug: Ensure NuGet secret exists
+      - name: Check NUGETDOTORG secret
+        run: |
+          if [ -z "${{ secrets.NUGETDOTORG }}" ]; then
+            echo "ERROR: NUGETDOTORG secret is empty!"
+            exit 1
+          fi
+
       # Optional: Publish to GitHub Packages
       - name: Push NuGet package to GitHub Packages
         uses: nuget/setup-nuget@v1
@@ -46,7 +52,7 @@ jobs:
             --api-key ${{ secrets.NuGetPublishToken }} \
             --skip-duplicate
 
-      # Push to NuGet.org
+      # Publish to NuGet.org
       - name: Push NuGet package to NuGet.org
         run: |
           dotnet nuget push ./nupkgs/Optima.Net.*.nupkg \
