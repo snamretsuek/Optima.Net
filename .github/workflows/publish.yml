@@ -41,7 +41,7 @@ jobs:
 
       # Upload nupkg as an artifact for manual download
       - name: Upload NuGet package artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Optima.Net-packages
           path: ./nupkgs/*.nupkg
