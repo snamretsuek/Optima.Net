@@ -45,3 +45,11 @@ jobs:
             --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
             --api-key ${{ secrets.NuGetPublishToken }} \
             --skip-duplicate
+
+      # Push to NuGet.org
+      - name: Push NuGet package to NuGet.org
+        run: |
+          dotnet nuget push ./nupkgs/Optima.Net.*.nupkg \
+            --source "https://api.nuget.org/v3/index.json" \
+            --api-key ${{ secrets.NUGETDOTORG }} \
+            --skip-duplicate
