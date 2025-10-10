@@ -21,6 +21,28 @@ namespace Optima.Net.Extensions
         }
 
         /// <summary>
+        /// Asynchronously filters a sequence of Optionals based on an async predicate.
+        /// Returns only Optionals that have a value and for which the predicate returns true.
+        /// </summary>
+        public static async Task<IEnumerable<Optional<T>>> WhereAsync<T>(
+            this IEnumerable<Optional<T>> optionals,
+            Func<T, Task<bool>> predicate)
+        {
+            var tasks = optionals.Select(async o =>
+            {
+                if (!o.HasValue)
+                    return Optional<T>.None();
+
+                var keep = await predicate(o.Value);
+                return keep ? o : Optional<T>.None();
+            });
+
+            var results = await Task.WhenAll(tasks);
+            return results.Where(r => r.HasValue);
+        }
+
+
+        /// <summary>
         /// Flattens a sequence of Optionals to only the contained values.
         /// </summary>
         public static IEnumerable<T> Flatten<T>(this IEnumerable<Optional<T>> optionals)
