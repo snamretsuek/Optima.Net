@@ -10,10 +10,10 @@ permissions:
 jobs:
   build-and-pack:
     runs-on: ubuntu-latest
-    environment: production   # Keep the environment
+    environment: production
 
     steps:
-      # Checkout the repo
+      # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -23,17 +23,15 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      # Create clean NuGet.config
+      # Create a clean NuGet.config to avoid XML errors
       - name: Create clean NuGet.config
         run: |
-          cat > ./nuget.config <<'EOF'
-<?xml version="1.0" encoding="utf-8"?>
+          echo '<?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <packageSources>
     <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
   </packageSources>
-</configuration>
-EOF
+</configuration>' > ./nuget.config
 
       # Restore dependencies
       - name: Restore dependencies
@@ -43,7 +41,7 @@ EOF
       - name: Build project
         run: dotnet build ./src/Optima.Net/Optima.Net.csproj --configuration Release --no-restore
 
-      # Pack NuGet package
+      # Pack project into a NuGet package
       - name: Pack NuGet package
         run: dotnet pack ./src/Optima.Net/Optima.Net.csproj --configuration Release --output ./nupkgs --no-build
 
@@ -51,7 +49,7 @@ EOF
       - name: List nupkg files
         run: ls -l ./nupkgs
 
-      # Upload nupkg as an artifact for manual download
+      # Upload the .nupkg as an artifact for manual download
       - name: Upload NuGet package artifact
         uses: actions/upload-artifact@v4
         with:
