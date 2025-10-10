@@ -3,18 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optima.Net", "Optima.Net\Optima.Net.csproj", "{5F164195-5934-4377-9956-B21D3D296309}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optima.Net", "src\Optima.Net\Optima.Net.csproj", "{5F164195-5934-4377-9956-B21D3D296309}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{D1D874A5-E3F7-4F75-953D-801CFD81CEA7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optima.Net.Tests", "Optima.Net.Tests\Optima.Net.Tests.csproj", "{C9F3740D-1CC7-49AA-AAE1-00587D3A99A9}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{87A5CB61-2062-439F-B09D-70BD9A3974DF}"
-	ProjectSection(SolutionItems) = preProject
-		publish.yml = publish.yml
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optima.Net.Tests", "test\Optima.Net.Tests\Optima.Net.Tests.csproj", "{C9F3740D-1CC7-49AA-AAE1-00587D3A99A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,10 +24,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{5F164195-5934-4377-9956-B21D3D296309} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
-		{C9F3740D-1CC7-49AA-AAE1-00587D3A99A9} = {D1D874A5-E3F7-4F75-953D-801CFD81CEA7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E29B9A71-7B96-4DD9-93AD-9285EF4C75A5}
