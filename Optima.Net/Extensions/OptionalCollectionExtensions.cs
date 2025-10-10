@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Optima.Net.Extensions
+namespace Optima.Net.Extensions.Collections
 {
     public static class OptionalCollectionExtensions
     {
