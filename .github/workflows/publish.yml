@@ -25,7 +25,7 @@ jobs:
 
       # Restore dependencies
       - name: Restore dependencies
-        run: dotnet restore ./src/Optima.Net/Optima.Net.csproj --configfile ./nuget.config
+        run: dotnet restore ./src/Optima.Net/Optima.Net.csproj
 
       # Build project
       - name: Build project
