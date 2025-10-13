@@ -8,6 +8,7 @@
 	  <!-- ✅ NuGet metadata -->
 	  <PackageId>Optima.Net</PackageId>
 	  <PackageIcon>optimaSmall.png</PackageIcon>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <Version>1.0.1</Version>
 	  <Authors>Marcus Keustermans</Authors>
 	  <Company>Marcus Keustermans</Company>
@@ -23,6 +24,7 @@
 
   <ItemGroup>
 	  <None Include="optimaSmall.png" Pack="true" PackagePath="" />
+	  <None Include="README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>
