@@ -41,6 +41,23 @@ namespace Optima.Net.Extensions.Collections
             return results.Where(r => r.HasValue);
         }
 
+        public static async Task<IEnumerable<Optional<T>>> WhereAsync<T>(
+            this IEnumerable<Optional<T>> optionals,
+            Func<T,CancellationToken, Task<bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            var tasks = optionals.Select(async o =>
+            {
+                if (!o.HasValue)
+                    return Optional<T>.None();
+
+                var keep = await predicate(o.Value,default);
+                return keep ? o : Optional<T>.None();
+            });
+
+            var results = await Task.WhenAll(tasks);
+            return results.Where(r => r.HasValue);
+        }
+
 
         /// <summary>
         /// Flattens a sequence of Optionals to only the contained values.

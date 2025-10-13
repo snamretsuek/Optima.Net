@@ -54,6 +54,17 @@ namespace Optima.Net.Extensions
             return optional;
         }
 
+        public static async Task<Optional<T>> TapAsync<T>(this Optional<T> optional, Func<T, 
+                CancellationToken, Task> asyncAction, CancellationToken cancellationToken = default)
+        {
+            if (optional.HasValue)
+            {
+                await asyncAction(optional.Value,cancellationToken);
+            }
+
+            return optional;
+        }
+
         /// <summary>
         /// Returns the original Optional if the predicate is true; otherwise returns None.
         /// Useful for conditional filtering in a functional pipeline.
@@ -83,6 +94,17 @@ namespace Optima.Net.Extensions
             return result ? optional : Optional<T>.None();
         }
 
+        public static async Task<Optional<T>> WhereAsync<T>(
+            this Optional<T> optional,
+            Func<T, CancellationToken, Task<bool>> predicate, CancellationToken cancellationToken=default)
+        {
+            if (!optional.HasValue)
+                return Optional<T>.None();
+
+            var result = await predicate(optional.Value,cancellationToken);
+            return result ? optional : Optional<T>.None();
+        }
+
         /// <summary>
         /// Returns this Optional if it has a value; otherwise returns the fallback Optional.
         /// </summary>
@@ -107,6 +129,14 @@ namespace Optima.Net.Extensions
         {
             ArgumentNullException.ThrowIfNull(fallbackFactory);
             return first.HasValue ? first : await fallbackFactory().ConfigureAwait(false);
+        }
+
+        public static async Task<Optional<T>> OrAsync<T>(
+            this Optional<T> first,
+            Func<CancellationToken, Task<Optional<T>>> fallbackFactory, CancellationToken cancellationToken=default)
+        {
+            ArgumentNullException.ThrowIfNull(fallbackFactory);
+            return first.HasValue ? first : await fallbackFactory(cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -143,6 +173,20 @@ namespace Optima.Net.Extensions
                 await onNone().ConfigureAwait(false);
         }
 
+        public static async Task MatchAsync<T>(
+           this Optional<T> optional,
+           Func<T, CancellationToken, Task> onSome,
+           Func<CancellationToken, Task> onNone, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(onSome);
+            ArgumentNullException.ThrowIfNull(onNone);
+
+            if (optional.HasValue)
+                await onSome(optional.Value,cancellationToken).ConfigureAwait(false);
+            else
+                await onNone(cancellationToken).ConfigureAwait(false);
+        }
+
         /// <summary>
         /// Performs asynchronous side effects based on Some/None and returns the original Optional for continued chaining.
         /// </summary>
@@ -163,6 +207,24 @@ namespace Optima.Net.Extensions
             return optional;
         }
 
+        public static async Task<Optional<T>> MatchAsync<T>(
+            this Optional<T> optional,
+            Func<T, CancellationToken, Task> onSome,
+            Func<CancellationToken, Task> onNone,
+            bool configureAwait = false,
+            CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(onSome);
+            ArgumentNullException.ThrowIfNull(onNone);
+
+            if (optional.HasValue)
+                await onSome(optional.Value, cancellationToken).ConfigureAwait(configureAwait);
+            else
+                await onNone(cancellationToken).ConfigureAwait(configureAwait);
+
+            return optional;
+        }
+
         /// <summary>
         /// Asynchronously maps the inner value of an Optional to a new Optional.
         /// </summary>
@@ -179,6 +241,19 @@ namespace Optima.Net.Extensions
             return Optional<TResult>.Some(result);
         }
 
+        public static async Task<Optional<TResult>> MapAsync<T, TResult>(
+            this Optional<T> optional,
+            Func<T, CancellationToken, Task<TResult>> asyncMapper, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(asyncMapper);
+
+            if (!optional.HasValue)
+                return Optional<TResult>.None();
+
+            var result = await asyncMapper(optional.Value,cancellationToken).ConfigureAwait(false);
+            return Optional<TResult>.Some(result);
+        }
+
         /// <summary>
         /// Asynchronously binds an Optional to a new Optional, flattening the result.
         /// </summary>
@@ -192,6 +267,18 @@ namespace Optima.Net.Extensions
                 return Optional<TResult>.None();
 
             return await asyncBinder(optional.Value).ConfigureAwait(false);
+        }
+
+        public static async Task<Optional<TResult>> BindAsync<T, TResult>(
+            this Optional<T> optional,
+            Func<T,CancellationToken, Task<Optional<TResult>>> asyncBinder, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(asyncBinder);
+
+            if (!optional.HasValue)
+                return Optional<TResult>.None();
+
+            return await asyncBinder(optional.Value,cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -245,6 +332,28 @@ namespace Optima.Net.Extensions
 
             if (!first.HasValue || !second.HasValue)
                 return Optional<TResult>.None();
+
+            return Optional<TResult>.Some(resultSelector(first.Value, second.Value));
+        }
+
+        public static async Task<Optional<TResult>> ZipAsync<T1, T2, TResult>(
+            this Task<Optional<T1>> firstTask,
+            Task<Optional<T2>> secondTask,
+            Func<T1, T2, TResult> resultSelector,
+            CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(firstTask);
+            ArgumentNullException.ThrowIfNull(secondTask);
+            ArgumentNullException.ThrowIfNull(resultSelector);
+
+            // Await both with cancellation
+            var first = await firstTask.WaitAsync(cancellationToken).ConfigureAwait(false);
+            var second = await secondTask.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+            if (!first.HasValue || !second.HasValue)
+                return Optional<TResult>.None();
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             return Optional<TResult>.Some(resultSelector(first.Value, second.Value));
         }
