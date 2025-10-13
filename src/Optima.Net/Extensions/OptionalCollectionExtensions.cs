@@ -43,26 +43,18 @@ namespace Optima.Net.Extensions.Collections
 
         public static async Task<IEnumerable<Optional<T>>> WhereAsync<T>(
             this IEnumerable<Optional<T>> optionals,
-            Func<T, Task<bool>> predicate,
-            CancellationToken cancellationToken = default)
+            Func<T,CancellationToken, Task<bool>> predicate, CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(optionals);
-            ArgumentNullException.ThrowIfNull(predicate);
-
             var tasks = optionals.Select(async o =>
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
                 if (!o.HasValue)
                     return Optional<T>.None();
 
-                var keep = await predicate(o.Value).WaitAsync(cancellationToken).ConfigureAwait(false);
-                cancellationToken.ThrowIfCancellationRequested();
-
+                var keep = await predicate(o.Value,default);
                 return keep ? o : Optional<T>.None();
             });
 
-            var results = await Task.WhenAll(tasks).WaitAsync(cancellationToken).ConfigureAwait(false);
+            var results = await Task.WhenAll(tasks);
             return results.Where(r => r.HasValue);
         }
 
