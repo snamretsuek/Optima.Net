@@ -44,6 +44,7 @@ namespace Optima.Net.Extensions
         /// Executes the provided async action if the Optional has a value, then returns the original Optional.
         /// Useful for async side effects like logging, notifications, or metrics in a pipeline.
         /// </summary>
+
         public static async Task<Optional<T>> TapAsync<T>(this Optional<T> optional, Func<T, Task> asyncAction)
         {
             if (optional.HasValue)
@@ -83,6 +84,7 @@ namespace Optima.Net.Extensions
         /// Filters an Optional asynchronously based on a predicate that returns a Task<bool>.
         /// Returns None if the Optional has no value or the predicate evaluates to false.
         /// </summary>
+
         public static async Task<Optional<T>> WhereAsync<T>(
             this Optional<T> optional,
             Func<T, Task<bool>> predicate)
@@ -123,6 +125,7 @@ namespace Optima.Net.Extensions
         /// <summary>
         /// Returns this Optional if it has a value; otherwise awaits and returns the fallback Optional.
         /// </summary>
+
         public static async Task<Optional<T>> OrAsync<T>(
             this Optional<T> first,
             Func<Task<Optional<T>>> fallbackFactory)
@@ -142,6 +145,7 @@ namespace Optima.Net.Extensions
         /// <summary>
         /// Asynchronously matches on Some or None and returns the awaited result.
         /// </summary>
+
         public static async Task<TResult> MatchAsync<T, TResult>(
             this Optional<T> optional,
             Func<T, Task<TResult>> onSome,
@@ -156,9 +160,21 @@ namespace Optima.Net.Extensions
             return await onNone().ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Asynchronously matches on Some or None, performing side effects without returning a value.
-        /// </summary>
+        public static async Task<TResult> MatchAsync<T, TResult>(
+            this Optional<T> optional,
+            Func<T,CancellationToken, Task<TResult>> onSome,
+            Func<CancellationToken,Task<TResult>> onNone, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(onSome);
+            ArgumentNullException.ThrowIfNull(onNone);
+
+            if (optional.HasValue)
+                return await onSome(optional.Value, cancellationToken).ConfigureAwait(false);
+
+            return await onNone(cancellationToken).ConfigureAwait(false);
+        }
+
+       
         public static async Task MatchAsync<T>(
             this Optional<T> optional,
             Func<T, Task> onSome,
