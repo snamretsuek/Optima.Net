@@ -593,43 +593,24 @@ Makes optionals feel native to C# pipelines.
   
 ## Guideline Matrix
 
-<TABLE>
-<TR><TD><B>Scenario</B></TD><TD><B>Recommended Approach</B></TD><TD><B>Why</B></TD></TR>
-<TR><TD>You just want the value or an exception if missing	</TD><TD>Value							</TD><TD>Simple and direct; throws 							
-																											NullValueException if None. Best for cases 		
-																											where absence is unexpected.						</TD></TR>
-<TR><TD>You want the value or a default                   	</TD><TD>ValueOrDefault(defaultValue)	</TD><TD>Avoids exceptions; allows a fallback value. 			
-																											Good for optional configuration or simple defaults.</TD></TR>
-<TR><TD>You want the value or null	                       	</TD><TD>ValueOrNull()					</TD><TD>Useful for nullable reference types. 				
-																											Simpler than ValueOrDefault(null).					</TD></TR>
-<TR><TD>Traditional C# Try-Get pattern                    	</TD><TD>TryGetValue(out var value)		</TD><TD>Familiar to C# developers; avoids exceptions 		
-																											and works nicely in conditional statements.		</TD></TR>
-<TR><TD>Perform side-effects or branching logic           	</TD><TD>Match(onSome, onNone)			</TD><TD>Declarative and expressive; keeps code functional.	
-																											Can also use MatchAsync for async side-effects.	</TD></TR>
-<TR><TD>Perform side-effects but keep fluent chaining     	</TD><TD>Tap / TapAsync					</TD><TD>Executes a side-effect without breaking the chain;
-																											good for logging, metrics, or auditing.			</TD></TR>
-<TR><TD>Transform a value (sync)                          	</TD><TD>Map							</TD><TD>Produces a new Optional<TResult>; keeps pipeline	
-																											functional.										</TD></TR>
-<TR><TD>Transform a value (async)                         	</TD><TD>MapAsync						</TD><TD>Allows async transformation while keeping 			
-																											pipeline fluent.									</TD></TR>
-<TR><TD>Chain operations that return Optionals (sync)     	</TD><TD>Bind							</TD><TD>Avoids nested Optionals; essential for dependent	
-																											computations.										</TD></TR>
-<TR><TD>Chain operations that return Optionals (async)    	</TD><TD>BindAsync						</TD><TD>Async equivalent of Bind; keeps pipelines fully 	
-																											async and composable.								</TD></TR>
-<TR><TD>Filter based on a predicate (sync)                	</TD><TD>Where							</TD><TD>Returns None if predicate fails; keeps pipeline	
-																											clean.												</TD></TR>		
-<TR><TD>Filter based on an async predicate                	</TD><TD>WhereAsync						</TD><TD>Async equivalent; useful for DB/API validations	
-																											or async checks.									</TD></TR>
-<TR><TD>Fallback to another Optional (sync)               	</TD><TD>Or								</TD><TD>Provides a safe fallback Optional; avoids null		
-																											coalescing logic.									</TD></TR>
-<TR><TD>Fallback to another Optional (async)              	</TD><TD>OrAsync						</TD><TD>Async fallback; integrates with async pipelines.	</TD></TR>
-<TR><TD>Combine two Optionals (sync)                      	</TD><TD>Zip							</TD><TD>Combines two Optionals only if both are present.	
-																											Useful for dependent values.						</TD></TR>
-<TR><TD>Combine two Optionals (async)                     	</TD><TD>ZipAsync						</TD><TD>Async version; waits for both Optionals before		
-																										combining.												</TD></TR>
-<TR><TD>Integrate with LINQ pipelines or collections      	</TD><TD>ToEnumerable					</TD><TD>Treats Optional as 0-or-1 sequence. Best when		
-																											working with multiple Optionals, LINQ, or 			
-																											collections.										</TD></TR>
-<TR><TD>Flatten nested Optionals                          	</TD><TD>Flatten						</TD><TD>Converts Optional<Optional<T>> → Optional<T>;		
-																											keeps pipeline simple.								</TD></TR>
-</TABLE>
+| **Scenario** | **Recommended Approach** | **Why** |
+|--------------|---------------------------|---------|
+| You just want the value or an exception if missing | `Value` | Simple and direct; throws `NullValueException` if `None`. Best for cases where absence is unexpected. |
+| You want the value or a default | `ValueOrDefault(defaultValue)` | Avoids exceptions; allows a fallback value. Good for optional configuration or simple defaults. |
+| You want the value or null | `ValueOrNull()` | Useful for nullable reference types. Simpler than `ValueOrDefault(null)`. |
+| Traditional C# Try-Get pattern | `TryGetValue(out var value)` | Familiar to C# developers; avoids exceptions and works nicely in conditional statements. |
+| Perform side-effects or branching logic | `Match(onSome, onNone)` | Declarative and expressive; keeps code functional. Can also use `MatchAsync` for async side-effects. |
+| Perform side-effects but keep fluent chaining | `Tap` / `TapAsync` | Executes a side-effect without breaking the chain; good for logging, metrics, or auditing. |
+| Transform a value (sync) | `Map` | Produces a new `Optional<TResult>`; keeps pipeline functional. |
+| Transform a value (async) | `MapAsync` | Allows async transformation while keeping pipeline fluent. |
+| Chain operations that return Optionals (sync) | `Bind` | Avoids nested Optionals; essential for dependent computations. |
+| Chain operations that return Optionals (async) | `BindAsync` | Async equivalent of `Bind`; keeps pipelines fully async and composable. |
+| Filter based on a predicate (sync) | `Where` | Returns `None` if predicate fails; keeps pipeline clean. |
+| Filter based on an async predicate | `WhereAsync` | Async equivalent; useful for DB/API validations or async checks. |
+| Fallback to another Optional (sync) | `Or` | Provides a safe fallback Optional; avoids null coalescing logic. |
+| Fallback to another Optional (async) | `OrAsync` | Async fallback; integrates with async pipelines. |
+| Combine two Optionals (sync) | `Zip` | Combines two Optionals only if both are present. Useful for dependent values. |
+| Combine two Optionals (async) | `ZipAsync` | Async version; waits for both Optionals before combining. |
+| Integrate with LINQ pipelines or collections | `ToEnumerable` | Treats Optional as 0-or-1 sequence. Best when working with multiple Optionals, LINQ, or collections. |
+| Flatten nested Optionals | `Flatten` | Converts `Optional<Optional<T>> → Optional<T>`; keeps pipeline simple. |
+
