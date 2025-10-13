@@ -21,4 +21,8 @@
 	  <PackageOutputPath>bin\Release</PackageOutputPath>
   </PropertyGroup>
 
+  <ItemGroup>
+	  <None Include="optimaSmall.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
 </Project>
