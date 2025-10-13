@@ -30,11 +30,27 @@ namespace Optima.Net.Extensions.Result
         /// Otherwise, you get a Result wrapping the list of successful values.
         /// This is super useful for batch operations, e.g., validating multiple inputs, creating multiple domain entities, or processing multiple tasks.
         /// </summary>
-        public static async Task<Result<IEnumerable<T>>> SequenceAsync<T>(this IEnumerable<Task<Result<T>>> tasks)
+        public static async Task<Result<IEnumerable<T>>> SequenceAsync<T>(
+            this IEnumerable<Task<Result<T>>> tasks,
+            CancellationToken cancellationToken = default)
         {
-            var results = await Task.WhenAll(tasks);
-            return results.Sequence(); // use the synchronous Sequence helper above
+            // Throw if the operation was canceled before starting
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // Wrap each task so it observes the cancellation token
+            var wrappedTasks = tasks.Select(async t =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                return await t.ConfigureAwait(false);
+            });
+
+            var results = await Task.WhenAll(wrappedTasks).ConfigureAwait(false);
+
+            return results.Sequence(); // use the synchronous Sequence helper
         }
+
+
+
 
         /// <summary>
         /// Filters a collection of Result<T> down to successes that meet a predicate:
@@ -49,7 +65,7 @@ namespace Optima.Net.Extensions.Result
         /// </summary>
         public static async Task<IEnumerable<Result<T>>> WhereAsync<T>(
             this IEnumerable<Result<T>> results,
-            Func<T, Task<bool>> predicate)
+            Func<T, CancellationToken, Task<bool>> predicate, CancellationToken cancellationToken = default)
         {
             var list = new List<Result<T>>();
             foreach (var r in results)
@@ -60,7 +76,7 @@ namespace Optima.Net.Extensions.Result
                 }
                 else
                 {
-                    bool keep = await predicate(r.Value);
+                    bool keep = await predicate(r.Value, cancellationToken);
                     list.Add(keep ? Result<T>.Ok(r.Value) : Result<T>.Fail("Filtered out"));
                 }
             }

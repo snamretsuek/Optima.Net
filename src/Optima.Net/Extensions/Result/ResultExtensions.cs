@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,6 +21,11 @@ namespace Optima.Net.Extensions.Result
             Func<T, Task<Result<U>>> func) =>
             result.IsFailure ? Result<U>.Fail(result.Error) : await func(result.Value);
 
+        public static async Task<Result<U>> BindAsync<T, U>(
+            this Result<T> result,
+            Func<T, CancellationToken, Task<Result<U>>> func, CancellationToken cancellationToken = default) =>
+            result.IsFailure ? Result<U>.Fail(result.Error) : await func(result.Value,cancellationToken);
+
 
         /// <summary>
         /// Transform the value if success
@@ -32,6 +38,11 @@ namespace Optima.Net.Extensions.Result
             this Result<T> result,
             Func<T, Task<U>> func) =>
             result.IsFailure ? Result<U>.Fail(result.Error) : Result<U>.Ok(await func(result.Value));
+
+        public static async Task<Result<U>> MapAsync<T, U>(
+            this Result<T> result,
+            Func<T, CancellationToken, Task<U>> func,CancellationToken cancellationToken = default) =>
+            result.IsFailure ? Result<U>.Fail(result.Error) : Result<U>.Ok(await func(result.Value,cancellationToken));
 
         /// <summary>
         /// Execute side-effect if success
@@ -51,6 +62,13 @@ namespace Optima.Net.Extensions.Result
                     return result;
                 }
 
+        public static async Task<Result<T>> TapAsync<T>(
+            this Result<T> result,
+            Func<T,CancellationToken, Task> action, CancellationToken cancellationToken = default)
+        {
+            if (result.IsSuccess) await action(result.Value,cancellationToken);
+            return result;
+        }
 
         /// <summary>
         /// Execute side-effect if failure
@@ -70,13 +88,17 @@ namespace Optima.Net.Extensions.Result
             Func<string, TResult> onFailure) =>
             result.IsSuccess ? onSuccess(result.Value) : onFailure(result.Error);
 
+       
         public static async Task<TResult> MatchAsync<T, TResult>(
             this Result<T> result,
             Func<T, Task<TResult>> onSuccess,
             Func<string, Task<TResult>> onFailure) =>
             result.IsSuccess ? await onSuccess(result.Value) : await onFailure(result.Error);
 
-
-
+        public static async Task<TResult> MatchAsync<T, TResult>(
+            this Result<T> result,
+            Func<T, CancellationToken, Task<TResult>> onSuccess,
+            Func<string, CancellationToken, Task<TResult>> onFailure, CancellationToken cancellationToken = default) =>
+            result.IsSuccess ? await onSuccess(result.Value, cancellationToken) : await onFailure(result.Error, cancellationToken);
     }
 }
