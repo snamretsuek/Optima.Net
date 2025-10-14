@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optima.Net", "src\Optima.Net\Optima.Net.csproj", "{5F164195-5934-4377-9956-B21D3D296309}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optima.Net.Test", "test\Optima.Net.Test\Optima.Net.Test.csproj", "{DF49699C-A07E-4981-9585-5BDCF9F6603B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{5F164195-5934-4377-9956-B21D3D296309}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F164195-5934-4377-9956-B21D3D296309}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F164195-5934-4377-9956-B21D3D296309}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF49699C-A07E-4981-9585-5BDCF9F6603B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF49699C-A07E-4981-9585-5BDCF9F6603B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF49699C-A07E-4981-9585-5BDCF9F6603B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF49699C-A07E-4981-9585-5BDCF9F6603B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
