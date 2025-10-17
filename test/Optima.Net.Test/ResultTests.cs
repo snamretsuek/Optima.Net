@@ -1,4 +1,5 @@
-﻿using Optima.Net.Result;
+﻿using Optima.Net.Exceptions;
+using Optima.Net.Result;
 
 namespace Optima.Net.Test
 {
@@ -37,15 +38,11 @@ namespace Optima.Net.Test
         }
 
         [Fact]
-        public void Ok_ShouldAllowNullValue_WhenTypeIsReferenceType()
+        public void Ok_ShouldThrowNullValueException_WhenValueIsNull()
         {
-            // Act
-            var result = Result<string>.Ok(null);
-
-            // Assert
-            Assert.True(result.IsSuccess);
-            Assert.Null(result.Value);
-            Assert.Equal(string.Empty, result.Error);
+            // Act & Assert
+            var ex = Assert.Throws<NullValueException>(() => Result<string>.Ok(null!));
+            Assert.Equal("Cannot create a successful Result with a null value.", ex.Message);
         }
 
         [Fact]
