@@ -48,20 +48,20 @@ namespace Optima.Net
         // Functional helpers
         public Optional<TResult> Map<TResult>(Func<T, TResult> mapper)
         {
-            if (mapper is null) throw new ArgumentNullException(nameof(mapper));
+            ArgumentNullException.ThrowIfNull(mapper, nameof(mapper));
             return HasValue ? Optional<TResult>.Some(mapper(value)) : Optional<TResult>.None();
         }
 
         public Optional<TResult> Bind<TResult>(Func<T, Optional<TResult>> binder)
         {
-            if (binder is null) throw new ArgumentNullException(nameof(binder));
+            ArgumentNullException.ThrowIfNull(binder,nameof(binder));
             return HasValue ? binder(value) : Optional<TResult>.None();
         }
 
         public TResult Match<TResult>(Func<T, TResult> onSome, Func<TResult> onNone)
         {
-            if (onSome is null) throw new ArgumentNullException(nameof(onSome));
-            if (onNone is null) throw new ArgumentNullException(nameof(onNone));
+            ArgumentNullException.ThrowIfNull(onSome,nameof(onSome));
+            ArgumentNullException.ThrowIfNull(onNone,nameof(onNone));
             return HasValue ? onSome(value) : onNone();
         }
 
