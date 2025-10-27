@@ -14,8 +14,11 @@
 
         /// <summary>
         /// The above is so that you can use the exception every where if you wanted to
-        /// The Below is specific to the Optional<T> use case
+        /// The Below is specific to the Optional<T> or Result<T>use case.
         /// </summary>
+        /// 
+        [Obsolete("Use ForOptionalType<T>() or ForResultType<T>() instead.")]
+        public static NullValueException ForType<T>() => new($"<{typeof(T).Name}> has no value.");// for backward copatibility
 
         public static NullValueException ForOptionalType<T>() => new($"Optional<{typeof(T).Name}> has no value.");
 
