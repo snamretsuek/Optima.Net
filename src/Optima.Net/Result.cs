@@ -1,4 +1,6 @@
-﻿namespace Optima.Net.Result
+﻿using Optima.Net.Exceptions;
+
+namespace Optima.Net.Result
 {
     public sealed class Result<T>
     {
@@ -9,6 +11,9 @@
 
         private Result(T value, bool isSuccess, string error)
         {
+            if (isSuccess && value is null)
+                throw new NullValueException("Cannot create a successful Result with a null value.");
+
             Value = value;
             IsSuccess = isSuccess;
             Error = error;

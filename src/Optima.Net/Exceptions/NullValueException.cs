@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Optima.Net.Exceptions
+﻿namespace Optima.Net.Exceptions
 {
-    internal sealed class NullValueException:Exception
+    public sealed class NullValueException:Exception
     {
         /// <summary>
         /// I don't do these very often but I need to explain why I created this exception.
@@ -24,6 +17,8 @@ namespace Optima.Net.Exceptions
         /// The Below is specific to the Optional<T> use case
         /// </summary>
 
-        public static NullValueException ForType<T>() => new($"Optional<{typeof(T).Name}> has no value.");
+        public static NullValueException ForOptionalType<T>() => new($"Optional<{typeof(T).Name}> has no value.");
+
+        public static NullValueException ForResultType<T>() => new($"Result<{typeof(T).Name}> has no value.");
     }
 }
