@@ -17,6 +17,8 @@
         /// The Below is specific to the Optional<T> use case
         /// </summary>
 
-        public static NullValueException ForType<T>() => new($"Optional<{typeof(T).Name}> has no value.");
+        public static NullValueException ForOptionalType<T>() => new($"Optional<{typeof(T).Name}> has no value.");
+
+        public static NullValueException ForResultType<T>() => new($"Result<{typeof(T).Name}> has no value.");
     }
 }
