@@ -18,7 +18,7 @@ namespace Optima.Net.Extensions
             if (!string.IsNullOrWhiteSpace(message))
                 throw new NullValueException(message);
 
-            throw NullValueException.ForType<T>();
+            throw NullValueException.ForOptionalType<T>();
         }
 
         /// <summary>

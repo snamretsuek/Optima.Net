@@ -31,11 +31,11 @@ namespace Optima.Net.Test.Exceptions
         [Fact]
         public void ForType_ShouldReturnCorrectMessage()
         {
-            var ex = NullValueException.ForType<int>();
+            var ex = NullValueException.ForOptionalType<int>();
             Assert.IsType<NullValueException>(ex);
             Assert.Equal("Optional<Int32> has no value.", ex.Message);
 
-            var ex2 = NullValueException.ForType<string>();
+            var ex2 = NullValueException.ForOptionalType<string>();
             Assert.Equal("Optional<String> has no value.", ex2.Message);
         }
     }
