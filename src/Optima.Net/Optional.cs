@@ -30,7 +30,7 @@ namespace Optima.Net
         /// <summary>
         /// Returns a NullValueException when trying to access a value that has not been set
         /// </summary>
-        public T Value => HasValue ? value : throw NullValueException.ForType<T>();
+        public T Value => HasValue ? value : throw NullValueException.ForOptionalType<T>();
 
         /// <summary>
         /// this is to allow for a default value to be returned if the value was not set 
