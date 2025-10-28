@@ -1,6 +1,10 @@
 # Optima.Net Optional\<T\>
 
-Optional<T> is a utility class designed to represent a value that may or may not exist. Its purpose is to provide a safer, more expressive alternative to null checks, making code easier to read and maintain.
+Optional\<T\> is a utility class designed to represent a value that may or may not exist. Its purpose is to provide a safer, more expressive alternative to null checks, making code easier to read and maintain.
+
+If you like what I did here or it inspired you to learn something new, please consider buying me a coffee: https://buymeacoffee.com/snamretsuek
+The support would be greatly appreciated!
+
 
 ## Overview
 
