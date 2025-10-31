@@ -22,7 +22,7 @@ namespace Optima.Net.Test.Extensions.Result
             // Assert
             Assert.True(aggregated.IsSuccess);
             Assert.Equal(new[] { 1, 2, 3 }, aggregated.Value.ToList());
-            Assert.Equal(string.Empty, aggregated.Error);
+            Assert.Null(aggregated.Error);
         }
 
         [Fact]

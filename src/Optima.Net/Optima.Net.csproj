@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
-	  <!-- ✅ NuGet metadata -->
+	  <!-- NuGet metadata -->
 	  <PackageId>Optima.Net</PackageId>
 	  <PackageIcon>optimaSmall.png</PackageIcon>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>

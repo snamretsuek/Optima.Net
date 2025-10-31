@@ -11,6 +11,8 @@
         public NullValueException() : base("A required value is null or missing.") { }
         public NullValueException(string? message) : base(message) { }
         public NullValueException(string? message, Exception? innerException) : base(message, innerException) { }
+        public NullValueException(string?paramName, string? message)
+            : base(message is null ? $"The parameter '{paramName}' is null or missing." : message){}
 
         /// <summary>
         /// The above is so that you can use the exception every where if you wanted to

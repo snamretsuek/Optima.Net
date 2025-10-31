@@ -2,7 +2,7 @@
 
 namespace Optima.Net.Extensions.Result
 {
-    public static class ResultExtensions
+    public static partial class ResultExtensions
     {
         /// <summary>
         /// Chain operations returning Result<U>
@@ -18,7 +18,7 @@ namespace Optima.Net.Extensions.Result
         public static async Task<Result<U>> BindAsync<T, U>(
             this Result<T> result,
             Func<T, CancellationToken, Task<Result<U>>> func, CancellationToken cancellationToken = default) =>
-            result.IsFailure ? Result<U>.Fail(result.Error) : await func(result.Value,cancellationToken);
+            result.IsFailure ? Result<U>.Fail(result.Error) : await func(result.Value, cancellationToken);
 
 
         /// <summary>
@@ -35,8 +35,8 @@ namespace Optima.Net.Extensions.Result
 
         public static async Task<Result<U>> MapAsync<T, U>(
             this Result<T> result,
-            Func<T, CancellationToken, Task<U>> func,CancellationToken cancellationToken = default) =>
-            result.IsFailure ? Result<U>.Fail(result.Error) : Result<U>.Ok(await func(result.Value,cancellationToken));
+            Func<T, CancellationToken, Task<U>> func, CancellationToken cancellationToken = default) =>
+            result.IsFailure ? Result<U>.Fail(result.Error) : Result<U>.Ok(await func(result.Value, cancellationToken));
 
         /// <summary>
         /// Execute side-effect if success
@@ -51,16 +51,16 @@ namespace Optima.Net.Extensions.Result
         public static async Task<Result<T>> TapAsync<T>(
             this Result<T> result,
             Func<T, Task> action)
-                {
-                    if (result.IsSuccess) await action(result.Value);
-                    return result;
-                }
+        {
+            if (result.IsSuccess) await action(result.Value);
+            return result;
+        }
 
         public static async Task<Result<T>> TapAsync<T>(
             this Result<T> result,
-            Func<T,CancellationToken, Task> action, CancellationToken cancellationToken = default)
+            Func<T, CancellationToken, Task> action, CancellationToken cancellationToken = default)
         {
-            if (result.IsSuccess) await action(result.Value,cancellationToken);
+            if (result.IsSuccess) await action(result.Value, cancellationToken);
             return result;
         }
 
@@ -82,7 +82,7 @@ namespace Optima.Net.Extensions.Result
             Func<string, TResult> onFailure) =>
             result.IsSuccess ? onSuccess(result.Value) : onFailure(result.Error);
 
-       
+
         public static async Task<TResult> MatchAsync<T, TResult>(
             this Result<T> result,
             Func<T, Task<TResult>> onSuccess,
@@ -94,5 +94,7 @@ namespace Optima.Net.Extensions.Result
             Func<T, CancellationToken, Task<TResult>> onSuccess,
             Func<string, CancellationToken, Task<TResult>> onFailure, CancellationToken cancellationToken = default) =>
             result.IsSuccess ? await onSuccess(result.Value, cancellationToken) : await onFailure(result.Error, cancellationToken);
+
+        
     }
 }
