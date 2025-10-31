@@ -4,23 +4,26 @@ namespace Optima.Net.Result
 {
     public sealed class Result<T>
     {
-        public bool IsSuccess { get; }
-        public bool IsFailure => !IsSuccess;
-        public T Value { get; }
-        public string Error { get; }
+        private readonly Result<T, string> _inner;
 
-        private Result(T value, bool isSuccess, string error)
-        {
-            if (isSuccess && value is null)
-                throw new NullValueException("Cannot create a successful Result with a null value.");
+        private Result(Result<T, string> inner) => _inner = inner;
 
-            Value = value;
-            IsSuccess = isSuccess;
-            Error = error;
-        }
+        public bool IsSuccess => _inner.IsSuccess;
+        public bool IsFailure => _inner.IsFailure;
+        public T Value => _inner.Value;
+        public string Error => _inner.Error;
 
-        // Factory methods
-        public static Result<T> Ok(T value) => new Result<T>(value, true, string.Empty);
-        public static Result<T> Fail(string error) => new Result<T>(default!, false, error);
+        public static Result<T> Ok(T value) =>
+            new(Result<T, string>.Ok(value));
+
+        public static Result<T> Fail(string error) =>
+            new(Result<T, string>.Fail(error));
+
+        public Result<T, TError> ToTyped<TError>(Func<string, TError> convertError) =>
+            _inner.IsSuccess
+                ? Result<T, TError>.Ok(_inner.Value)
+                : Result<T, TError>.Fail(convertError(_inner.Error));
+
+        public Result<T, string> Inner() => _inner;
     }
 }

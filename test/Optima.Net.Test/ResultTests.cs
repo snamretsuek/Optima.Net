@@ -18,7 +18,7 @@ namespace Optima.Net.Test
             Assert.True(result.IsSuccess);
             Assert.False(result.IsFailure);
             Assert.Equal(value, result.Value);
-            Assert.Equal(string.Empty, result.Error);
+            Assert.Null(result.Error);
         }
 
         [Fact]
@@ -42,7 +42,7 @@ namespace Optima.Net.Test
         {
             // Act & Assert
             var ex = Assert.Throws<NullValueException>(() => Result<string>.Ok(null!));
-            Assert.Equal("Cannot create a successful Result with a null value.", ex.Message);
+            Assert.Equal("Result<String> has no value.", ex.Message);
         }
 
         [Fact]

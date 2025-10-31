@@ -42,5 +42,16 @@ namespace Optima.Net.Extensions.Result.LINQ
                 }
             }
         }
+
+        public static Result<U, TError> Select<T, U, TError>(
+        this Result<T, TError> r,
+        Func<T, U> selector) =>
+        r.Map(selector);
+
+        public static Result<V, TError> SelectMany<T, U, V, TError>(
+            this Result<T, TError> r,
+            Func<T, Result<U, TError>> bind,
+            Func<T, U, V> project) =>
+            r.Bind(t => bind(t).Map(u => project(t, u)));
     }
 }
