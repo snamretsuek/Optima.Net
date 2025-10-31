@@ -20,6 +20,7 @@
 	  <RepositoryType>git</RepositoryType>
 	  <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 	  <PackageOutputPath>bin\Release</PackageOutputPath>
+	  <PackageReleaseNotes>ReleaseNotes.md</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

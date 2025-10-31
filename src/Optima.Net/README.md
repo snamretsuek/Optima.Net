@@ -41,14 +41,13 @@ The support would be greatly appreciated!
   - [Pattern matching](#pattern-matching-1)
   - [Domain error modeling](#domain-error-modeling)
   - [Typical usage](#typical-usage)
-<a id="optimanet-optionalt"><a\>
+
 # Optima.Net Optional\<T\>
 
 Optional\<T\> is a utility class designed to represent a value that may or may not exist. Its purpose is to provide a safer, more expressive alternative to null checks, making code easier to read and maintain.
 
 
 
-<a id="overview"></a>
 ## Overview
 
 - Some(value): Wraps a value in an Optional.  
@@ -59,7 +58,7 @@ Optional\<T\> is a utility class designed to represent a value that may or may n
 
 
 Optional\<T\> is immutable and thread-safe. It is intended to be used wherever a value might not be present, allowing developers to handle both cases explicitly and safely.
-<a id="creating-optionals"></a>
+
 ## Creating Optionals
 
 Optional with a value:
@@ -74,7 +73,7 @@ Optional with no value:
 
 Some(value) throws ArgumentNullException if the value is null.  
 None() is a singleton representing no value.
-<a id="accessing-values"></a>
+
 ## Accessing Values
 
 **Value:**
@@ -91,7 +90,7 @@ None() is a singleton representing no value.
 ```
     var user = maybeUser.ValueOrNull();
 ```
-<a id="functional-operations"></a>
+
 ## Functional Operations
 
 **Map:**  
@@ -149,7 +148,7 @@ It returns the result of the function you call, so no need to unwrap manually or
 
 It’s basically a “pattern match” for Optionals.
 
-<a id="optionalt-extensions"></a>
+
 ## Optional\<T\> Extensions
 
 The extensions are divided into 3 name spaces:  
@@ -554,7 +553,7 @@ Flatten a List\<Optional\<User\>\> cleanly, resulting in a List\<User\> with onl
 ```
     var users = optionalUsers.SelectMany(u =\> u.ToEnumerable());
 ```
-<a id="linq-support"></a>
+
 ## LINQ support
 
 **Select, SelectMany:** query syntax:  
@@ -570,7 +569,7 @@ Flatten a List\<Optional\<User\>\> cleanly, resulting in a List\<User\> with onl
                      select u;
 ```
 Makes optionals feel native to C# pipelines.
-<a id="more-examples"></a>
+
 ## More Examples
 
 1. Fetching Optional Configuration:
@@ -634,14 +633,14 @@ Makes optionals feel native to C# pipelines.
     );
 ```
 
-<a id="notes"></a>
+
 ## Notes
 
 - Use Optional\<T\> whenever a value might be absent, instead of null.  
 - Functional operations (Map, Bind, Match) make pipelines readable and safe.  
 - Optional\<T\> integrates cleanly with domain-driven designs and event-driven architectures.  
 
-<a id="guideline-matrix"></a>  
+  
 ## Guideline Matrix
 
 | **Scenario** | **Recommended Approach** | **Why** |
@@ -665,16 +664,16 @@ Makes optionals feel native to C# pipelines.
 | Integrate with LINQ pipelines or collections | `ToEnumerable` | Treats Optional as 0-or-1 sequence. Best when working with multiple Optionals, LINQ, or collections. |
 | Flatten nested Optionals | `Flatten` | Converts `Optional\<Optional\<T\>\> → Optional\<T\>`; keeps pipeline simple. |
 
-<a id="optimanet-resultt"></a>
+
 # Optima.Net Result\\<T\\>
-<a id="overview-1"></a>
+
 ## Overview
 
 Result\<T\> provides a clean way to represent the outcome of an operation — success or failure — without relying on exceptions for normal control flow.
 It wraps either a value (on success) or an error message (on failure), allowing for explicit, predictable handling.
 
 the namespace is Optima.Net.Result
-<a id="createing-a-successful-results"></a>
+
 ## Createing a successful Results
 
 ```
@@ -696,7 +695,7 @@ You can safely access Value because it’s guaranteed to be non-null when IsSucc
 ```
 Operation completed successfully.
 ```
-<a id="creating-a-failed-result"></a>
+
 ## Creating a failed Result
 
 ```
@@ -718,7 +717,7 @@ Accessing Value here would not make sense — it will be the default for T (e.g.
 ```
 Something went wrong.
 ``` 
-<a id="guarding-against-null-success-values"></a>
+
 ## Guarding Against Null Success Values
 
 ```
@@ -740,7 +739,7 @@ If you attempt to call Ok(null), a NullValueException (from Optima.Net.Exception
 ```
 Cannot create a successful Result with a null value.
 ```
-<a id="integration-example"></a>
+
 ## Integration Example
 
 **Returning Result from a Service Method:**
@@ -794,7 +793,7 @@ Found user: Marcus
 ```
 Error: User with ID 99 not found.
 ```
-<a id="chaining-operations-bind--bindasync"></a>
+
 ## Chaining Operations (Bind / BindAsync)
 
 Use Bind when you want to chain multiple operations that each return a Result \<U\> — like database calls, validations, or API requests.
@@ -860,7 +859,7 @@ Console.WriteLine(result.Match(
 ```
 The async versions behave identically — they just await the inner function.  Perfect for composing async workflows 
 without nested try blocks.
-<a id="transforming-values-map--mapasync"></a>
+
 ## Transforming Values (Map / MapAsync)
 
 Use Map when you want to transform the inner value of a successful result without changing the type to another Result\<T\>.
@@ -897,7 +896,7 @@ Console.WriteLine(result.Value);
 Use when your transformation itself is async (e.g., calling an external service).
 
 You stay in the Result \<T\> flow without breaking the pipeline.
-<a id="side-effects-tap--tapasync--onfailure"></a>
+
 ## Side Effects (Tap / TapAsync / OnFailure)
 
 Use these when you want to perform side effects (like logging, metrics, or notifications) without altering the result itself.
@@ -932,7 +931,7 @@ await Result\<string\>.Ok("Saved")
 ```
 Logging: Saved
 ```
-<a id="pattern-matching-match--matchasync"></a>
+
 ## Pattern Matching (Match / MatchAsync)
 
 Use Match when you want to convert a Result\<T\> into a final output — success and failure are handled explicitly, expression-style.
@@ -972,7 +971,7 @@ Console.WriteLine(message);
 ```
 Handled failure: Network unavailable
 ```
-<a id="resultcollectionextension--working-with-collections-of-results"></a>
+
 ## ResultCollectionExtension — Working with Collections of Results
 
 **namespace Optima.Net.Extensions.Result**
@@ -997,7 +996,7 @@ These are ideal for:
 
   - Handling collections of mixed successes and failures
   
-<a id="aggregating-multiple-results-sequence"></a>
+
 ## Aggregating Multiple Results. Sequence
 
 **Syncronous Example:**
@@ -1153,7 +1152,7 @@ Unwrapped value: Success
 ```
 
 If the outer result was a failure, Flatten() would return that failure directly, ignoring the inner result.
-<a id="resultlinqextensions--linq-support-for-resultt"></a>
+
 ## ResultLinqExtensions — LINQ Support for Result\<T\>
 
 **namespace Optima.Net.Extensions.Result.LINQ**
@@ -1318,21 +1317,21 @@ else
 ```
 Kept values: 15, 30
 ```
-<a id="optimanet-resultttterror"></a>
+
 # Optima.Net Result\<T,TError\>
-<a id="overview-2"></a>
+
 ## Overview
 
 Result\<T,TError\> is the typed version of Result. It carries either a success value T or a failure value TError.
 No string guessing. No parsing error text. Strong, explicit error modeling.
-<a id="why-typed-errors-matter"></a>
+
 ## Why typed errors matter
 
 - Compiler-enforced error handling
 - No error string drift
 - Clear domain intent
 - Safer refactoring and composition
-<a id="creating-typed-results"></a>
+
 ## Creating typed results
 
 ```
@@ -1347,7 +1346,7 @@ public interface IUserError {}
 public record UserNotFound(int Id) : IUserError;
 public record UserInactive() : IUserError;
 ```
-<a id="mapping-and-binding"></a>
+
 ## Mapping and binding
 
 ```
@@ -1357,7 +1356,7 @@ var r = Result\<int, OrderError\>.Ok(10)
         ? Result\<string, OrderError\>.Ok($"Value {x}")
         : Result\<string, OrderError\>.Fail(new TooSmallError()));
 ```
-<a id="ensure"></a>
+
 ## Ensure
 
 ```
@@ -1366,7 +1365,7 @@ Result\<User, IUserError\>.Ok(user)
 ```
 
 If predicate is false, returns a failure using the error factory. If already failure, it stays failure.
-<a id="async-ensure"></a>
+
 ## Async Ensure
 
 ```
@@ -1375,7 +1374,7 @@ await Result\<User, IUserError\>.Ok(user)
 ```
 
 Cancellation token overloads are available in the extensions.
-<a id="pattern-matching-1"></a>
+
 ## Pattern matching
 
 ```
@@ -1384,7 +1383,7 @@ var msg = result.Match(
     err =\> $"Error: {err}"
 );
 ```
-<a id="domain-error-modeling"></a>
+
 ## Domain error modeling
 
 Prefer small records or a marker interface for sets of errors:
@@ -1401,7 +1400,7 @@ Then return:
 ```
 Result\<Receipt, PaymentError\>
 ```
-<a id="typical-usage"></a>
+
 ## Typical usage
 
 - Domain services that must report specific failures
