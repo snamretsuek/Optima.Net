@@ -1,6 +1,4 @@
-﻿using Optima.Net.Exceptions;
-
-namespace Optima.Net.Result
+﻿namespace Optima.Net.Result
 {
     public sealed class Result<T>
     {
