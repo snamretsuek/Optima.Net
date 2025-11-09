@@ -16,7 +16,7 @@
 	  <RepositoryUrl>https://github.com/snamretsuek/Optima.Net</RepositoryUrl>
 	  <PackageDescription>A functional Optional&lt;T&gt; and Result&lt;T&gt; implementation for .NET with async and LINQ support.</PackageDescription>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	  <PackageProjectUrl>https://github.com/snamretsuek/Optima.Net</PackageProjectUrl>
+	  <PackageProjectUrl>http://www.OptimaSoftware.co.za</PackageProjectUrl>
 	  <RepositoryType>git</RepositoryType>
 	  <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 	  <PackageOutputPath>bin\Release</PackageOutputPath>
