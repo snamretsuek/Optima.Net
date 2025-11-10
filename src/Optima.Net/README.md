@@ -1,6 +1,6 @@
 # Optima.Net
 
-Optima.Net is a functional utility toolkit for C#. It provides Optional/<T/> and Result types for safe, expressive, exception-free programming. It brings LINQ support, 
+Optima.Net is a functional utility toolkit for C#. It provides Optional\<T\> and Result types for safe, expressive, exception-free programming. It brings LINQ support, 
 async flows, typed errors, functional pipelines, and clean compositional patterns — ideal for domain-driven design, validation, and modern services 
 that value correctness, clarity, and predictable error handling.
 
@@ -9,17 +9,17 @@ The support would be greatly appreciated!
 
 # Index
 
-- [Optima.Net Optional/<T/>](#optimanet-optionalt)
+- [Optima.Net Optional\<T\>](#optimanet-optionalt)
   - [Overview](#overview)
   - [Creating Optionals](#creating-optionals)
   - [Accessing Values](#accessing-values)
   - [Functional Operations](#functional-operations)
-  - [Optional/<T/> Extensions](#optionalt-extensions)
+  - [Optional\<T\> Extensions](#optionalt-extensions)
   - [LINQ support](#linq-support)
   - [More Examples](#more-examples)
   - [Notes](#notes)
   - [Guideline Matrix](#guideline-matrix)
-- [Optima.Net Result/<T/>](#optimanet-resultt)
+- [Optima.Net Result\<T\>](#optimanet-resultt)
   - [Overview](#overview-1)
   - [Createing a successful Results](#createing-a-successful-results)
   - [Creating a failed Result](#creating-a-failed-result)
@@ -31,8 +31,8 @@ The support would be greatly appreciated!
   - [Pattern Matching (Match / MatchAsync)](#pattern-matching-match--matchasync)
 - [ResultCollectionExtension — Working with Collections of Results](#resultcollectionextension--working-with-collections-of-results)
 - [Aggregating Multiple Results. Sequence](#aggregating-multiple-results-sequence)
-- [ResultLinqExtensions — LINQ Support for Result/<T/>](#resultlinqextensions--linq-support-for-resultt)
-- [Optima.Net Result/<T,TError/>](#optimanet-resultttterror)
+- [ResultLinqExtensions — LINQ Support for Result\<T\>](#resultlinqextensions--linq-support-for-resultt)
+- [Optima.Net Result\<T,TError\>](#optimanet-resultttterror)
   - [Overview](#overview-2)
   - [Why typed errors matter](#why-typed-errors-matter)
   - [Creating typed results](#creating-typed-results)
@@ -45,7 +45,7 @@ The support would be greatly appreciated!
 
 # Optima.Net Optional \<T\>
 
-Optional/<T/> is a utility class designed to represent a value that may or may not exist. Its purpose is to provide a safer, more expressive alternative to null checks, making code easier to read and maintain.
+Optional\<T\> is a utility class designed to represent a value that may or may not exist. Its purpose is to provide a safer, more expressive alternative to null checks, making code easier to read and maintain.
 
 ## Overview
 
@@ -55,7 +55,7 @@ Optional/<T/> is a utility class designed to represent a value that may or may n
 - Functional operations (sync): Map, Bind, Match, Tap, Where, Or, Zip, Flatten, ToEnumerable  
 - Functional operations (async): MapAsync, BindAsync, MatchAsync, TapAsync, WhereAsync, OrAsync, ZipAsync
 
-Optional/<T/> is immutable and thread-safe. It is intended to be used wherever a value might not be present, allowing developers to handle both cases explicitly and safely.
+Optional\<T\> is immutable and thread-safe. It is intended to be used wherever a value might not be present, allowing developers to handle both cases explicitly and safely.
 
 ## Creating Optionals
 
@@ -288,7 +288,7 @@ WhereAsync preserves the Optional pipeline model; no leaking null, no messy .Any
 It’s safe and clean even with async I/O operations.
 
 ```
-    var users = new List/<Optional<User>>
+    var users = new List\<Optional<User>>
     {
         Optional<User>.Some(new User("Alice", true)),
         Optional<User>.Some(new User("Bob", false)),
@@ -333,7 +333,7 @@ If not, it returns another Optional\<T\> or it calls the fallback factory userRe
 
 **Flatten:**  
 For nested optionals:
-Flattens a nested Optional/<Optional\<T\>\> into a single Optional\<T\>.
+Flattens a nested Optional\<Optional\<T\>\> into a single Optional\<T\>.
 
 ```
     Optional<Optional<T>> nested = ...;
@@ -392,7 +392,7 @@ Transforming values asynchronously while preserving the Optional pipeline.
 ```
     Optional<string> maybeApiKey = configRepository.GetApiKey("PaymentService");
 
-    Optional<string> maybeEncryptedKey = await maybeApiKey.MapAsync(async key =/>
+    Optional<string> maybeEncryptedKey = await maybeApiKey.MapAsync(async key =\>
     {
         await Task.Delay(50); // simulate async work
         return Encrypt(key);
@@ -594,7 +594,7 @@ Integrating LINQ Pipelines
         .FirstOrDefault(); // returns null if maybeUser is None or inactive
 ```
 
-Flatten a List\<Optional\<User\>\> cleanly, resulting in a List/<User/> with only the present values, automatically skipping all Nones.  
+Flatten a List\<Optional\<User\>\> cleanly, resulting in a List\<User\> with only the present values, automatically skipping all Nones.  
 
 ```
     var users = optionalUsers.SelectMany(u => u.ToEnumerable());
@@ -656,7 +656,7 @@ Makes optionals feel native to C# pipelines.
    
     Optional<int> maybeAge = maybeInput
     .Map(s => int.TryParse(s, out var n) ? n : throw new FormatException())
-    .Bind(age => age /> 0 ? Optional/<int/>.Some(age) : Optional/<int/>.None());
+    .Bind(age => age \> 0 ? Optional\<int\>.Some(age) : Optional\<int\>.None());
    
     maybeAge.Match(
     onSome: age => domainService.RegisterAge(age),
@@ -707,7 +707,7 @@ Makes optionals feel native to C# pipelines.
 | Traditional C# Try-Get pattern                     | `TryGetValue(out var value)`   | Familiar to C# developers; avoids exceptions and works nicely in conditional statements.              |
 | Perform side-effects or branching logic            | `Match(onSome, onNone)`        | Declarative and expressive; keeps code functional. Can also use `MatchAsync` for async side-effects.  |
 | Perform side-effects but keep fluent chaining      | `Tap` / `TapAsync`             | Executes a side-effect without breaking the chain; good for logging, metrics, or auditing.            |
-| Transform a value (sync)                           | `Map`                          | Produces a new `Optional/<TResult/>`; keeps pipeline functional.                                      |
+| Transform a value (sync)                           | `Map`                          | Produces a new `Optional\<TResult\>`; keeps pipeline functional.                                      |
 | Transform a value (async)                          | `MapAsync`                     | Allows async transformation while keeping pipeline fluent.                                            |
 | Chain operations that return Optionals (sync)      | `Bind`                         | Avoids nested Optionals; essential for dependent computations.                                        |
 | Chain operations that return Optionals (async)     | `BindAsync`                    | Async equivalent of `Bind`; keeps pipelines fully async and composable.                               |
@@ -718,9 +718,9 @@ Makes optionals feel native to C# pipelines.
 | Combine two Optionals (sync)                       | `Zip`                          | Combines two Optionals only if both are present. Useful for dependent values.                         |
 | Combine two Optionals (async)                      | `ZipAsync`                     | Async version; waits for both Optionals before combining.                                             |
 | Integrate with LINQ pipelines or collections       | `ToEnumerable`                 | Treats Optional as 0-or-1 sequence. Best when working with multiple Optionals, LINQ, or collections.  |
-| Flatten nested Optionals                           | `Flatten`                      | Converts `Optional/<Optional/<T/>/> → Optional/<T/>`; keeps pipeline simple.                          |
+| Flatten nested Optionals                           | `Flatten`                      | Converts `Optional\<Optional\<T\>\> → Optional\<T\>`; keeps pipeline simple.                          |
 
-# Optima.Net Result\<T\/>
+# Optima.Net Result\<T\\>
 
 ## Overview
 
@@ -928,7 +928,7 @@ without nested try blocks.
 
 ## Transforming Values (Map / MapAsync)
 
-Use Map when you want to transform the inner value of a successful result without changing the type to another Result/<T/>.
+Use Map when you want to transform the inner value of a successful result without changing the type to another Result\<T\>.
 
 **Syncronous Example:**
 
@@ -1111,10 +1111,10 @@ Failed: Third item failed
 **Asyncronous Example:**
 
 ```
-async Task<Result<int>/> ComputeAsync(int x)
+async Task<Result<int>\> ComputeAsync(int x)
 {
     await Task.Delay(50);
-    return x > 0 ? Result/<int/>.Ok(x * 2) : Result<int>.Fail($"Invalid: {x}");
+    return x > 0 ? Result\<int\>.Ok(x * 2) : Result<int>.Fail($"Invalid: {x}");
 }
 
 var tasks = new[]
@@ -1147,7 +1147,7 @@ Errors: Invalid: -5
 **Syncronous Example:**
 
 ```
-var results = new List<Result<int>/>
+var results = new List<Result<int>\>
 {
     Result<int>.Ok(10),
     Result<int>.Ok(3),
@@ -1155,7 +1155,7 @@ var results = new List<Result<int>/>
     Result<int>.Fail("Invalid input")
 };
 
-var filtered = results.Where(x =/> x /> 5);
+var filtered = results.Where(x =\> x \> 5);
 
 foreach (var r in filtered)
 {
@@ -1217,7 +1217,7 @@ Even number: 4
 
 ## Flattening Nested Results
 
-Flatten() is for collapsing nested results (Result\<Result\<T\>\/>) into a single layer.
+Flatten() is for collapsing nested results (Result\<Result\<T\>\\>) into a single layer.
 If the outer result failed, the inner result is ignored.
 If the outer succeeded, it unwraps and returns the inner result directly.
 
@@ -1225,7 +1225,7 @@ If the outer succeeded, it unwraps and returns the inner result directly.
 
 ```
 Result<Result<string>> nested =
-    Result<Result<string>>.Ok(Result/<string/>.Ok("Success"));
+    Result<Result<string>>.Ok(Result\<string\>.Ok("Success"));
 
 var flat = nested.Flatten();
 
@@ -1276,7 +1276,7 @@ Console.WriteLine(r1.Match(
 **SelectMany (Bind + Project) — Chaining two dependent results
 
 ```
-Result<int> GetUserId() =/> Result<int>.Ok(7);
+Result<int> GetUserId() =\> Result<int>.Ok(7);
 Result<string> GetUserName(int id) => id == 7 ? Result<string>.Ok("Marcus") : Result<string>.Fail("No user");
 
 var profile = GetUserId()
@@ -1306,7 +1306,7 @@ var query = from id in FindOrderId("abc")
             select new { Id = id, Amount = amt };
 
 var output = query.Match(
-    success => $"Order {success.Id} -/> {success.Amount:C}",
+    success => $"Order {success.Id} -\> {success.Amount:C}",
     failure => $"Failure: {failure}"
 );
 
@@ -1324,7 +1324,7 @@ That where line in a single-Result\<T\> LINQ expression is translated to a Selec
 the compiler desugars it for monadic types.
 
 The presence of Select and SelectMany methods is the core requirement to make such query expressions work for Result\<T\>. 
-The Where defined in ResultLinqExtensions handles the pattern when the compiler expects Where on an IEnumerable\<Result/<T\>\> 
+The Where defined in ResultLinqExtensions handles the pattern when the compiler expects Where on an IEnumerable\<Result\<T\>\> 
 sequence or when the query syntax resolves to calling Where on the intermediate shape. Implementing Where 
 here keeps LINQ syntax intuitive and prevents compilation headaches.
 
@@ -1348,7 +1348,7 @@ var q =
 // q is IEnumerable<Result<int>>
 foreach (var rr in q)
 {
-    Console.WriteLine(rr.Match(s => $"Kept: {s}", e =/> $"Dropped: {e}"));
+    Console.WriteLine(rr.Match(s => $"Kept: {s}", e =\> $"Dropped: {e}"));
 }
 ```
 
