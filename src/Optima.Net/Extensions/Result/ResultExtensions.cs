@@ -1,4 +1,5 @@
-﻿using Optima.Net.Result;
+﻿using Optima.Net.Primitives;
+using Optima.Net.Result;
 
 namespace Optima.Net.Extensions.Result
 {
@@ -95,6 +96,37 @@ namespace Optima.Net.Extensions.Result
             Func<string, CancellationToken, Task<TResult>> onFailure, CancellationToken cancellationToken = default) =>
             result.IsSuccess ? await onSuccess(result.Value, cancellationToken) : await onFailure(result.Error, cancellationToken);
 
-        
+        public static Result<U> Bind<U>(
+            this Result<Unit> result,
+            Func<Result<U>> func) =>
+            result.IsFailure ? Result<U>.Fail(result.Error) : func();
+
+        public static async Task<Result<U>> BindAsync<U>(
+            this Result<Unit> result,
+            Func<Task<Result<U>>> func) =>
+            result.IsFailure ? Result<U>.Fail(result.Error) : await func();
+
+        public static Result<Unit> Tap(
+            this Result<Unit> result,
+            Action action)
+        {
+            if (result.IsSuccess) action();
+            return result;
+        }
+
+        public static async Task<Result<Unit>> TapAsync(
+            this Result<Unit> result,
+            Func<Task> action)
+        {
+            if (result.IsSuccess) await action();
+            return result;
+        }
+
+        public static TResult Match<TResult>(
+            this Result<Unit> result,
+            Func<TResult> onSuccess,
+            Func<string, TResult> onFailure) =>
+            result.IsSuccess ? onSuccess() : onFailure(result.Error);
+
     }
 }
