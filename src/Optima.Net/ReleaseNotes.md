@@ -1,5 +1,10 @@
 # Optima.Net Release Notes
 
+## v1.0.7
+Added support for Result<Unit> paradigm.
+
+---
+
 ## v1.0.5
 Added reference links to README for easier navigation and adoption.
 
