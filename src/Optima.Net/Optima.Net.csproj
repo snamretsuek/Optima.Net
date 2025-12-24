@@ -9,7 +9,7 @@
 	  <PackageId>Optima.Net</PackageId>
 	  <PackageIcon>optimaSmall.png</PackageIcon>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
-	  <Version>1.0.7</Version>
+	  <Version>1.0.8</Version>
 	  <Authors>Marcus Keustermans</Authors>
 	  <Company>Marcus Keustermans</Company>
 	  <Product>Optima.Net</Product>
