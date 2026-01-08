@@ -1,5 +1,57 @@
 # Optima.Net Release Notes
 
+
+## v1.0.8
+
+Result Semantics Hardening (Backward Compatible)
+
+This release strengthens the internal invariants of Result\<T\> and Result\<T, TError\> while remaining fully backward compatible.
+No existing contracts were loosened; several were made explicit and consistently enforced across all entry points.
+
+What changed
+
+Failure semantics were clarified and hardened
+
+Failures may exist with or without a value.
+
+Canonical form is Fail(value, error).
+
+Legacy form Fail(error) remains supported for backward compatibility.
+
+Illegal states are now prevented from leaking
+
+Accessing Value on a failure that does not carry a value now fails loudly.
+
+This prevents silent propagation of default(T).
+
+Invariant enforcement was aligned across Result surfaces
+
+Result\<T\> and Result\<T, TError\> now enforce the same domain rules.
+
+Public façades no longer rely on indirect enforcement only.
+
+Exception signaling was improved
+
+Invariant violations now throw domain-specific exceptions
+(for example NullValueException) instead of generic runtime exceptions.
+
+Exception types now clearly communicate what went wrong, not just that something went wrong.
+
+Backward compatibility
+
+No public APIs were removed or renamed.
+
+Existing code using Fail(error) continues to compile and run.
+
+Behavioral changes only affect previously unsafe or undefined usage
+(for example, accessing Value when none exists).
+
+Guidance
+
+Prefer Fail(value, error) to preserve state on failure.
+
+Legacy overloads Fail(error) are retained but marked as obsolete to guide migration.
+
 ## v1.0.7
 Added support for Result<Unit> paradigm.
 

@@ -24,7 +24,7 @@ namespace Optima.Net.Test.Extensions.Result
         public void Select_Should_Propagate_Failure()
         {
             // Arrange
-            var result = Result<int>.Fail("Bad math");
+            var result = Result<int>.Fail(5, "Bad math");
 
             // Act
             var mapped = result.Select(x => x * 2);
@@ -55,7 +55,7 @@ namespace Optima.Net.Test.Extensions.Result
         {
             // Arrange
             var r1 = Result<int>.Ok(5);
-            var r2 = Result<int>.Fail("boom");
+            var r2 = Result<int>.Fail(5, "boom");
 
             // Act
             var composed = r1.SelectMany(
@@ -96,7 +96,7 @@ namespace Optima.Net.Test.Extensions.Result
             // Arrange
             var results = new[]
             {
-                Result<int>.Fail("bad"),
+                Result<int>.Fail(5, "bad"),
                 Result<int>.Ok(4)
             };
 
@@ -133,7 +133,7 @@ namespace Optima.Net.Test.Extensions.Result
         {
             // Arrange
             var r1 = Result<int>.Ok(2);
-            var r2 = Result<int>.Fail("nope");
+            var r2 = Result<int>.Fail(5, "nope");
 
             // Act
             var query =
