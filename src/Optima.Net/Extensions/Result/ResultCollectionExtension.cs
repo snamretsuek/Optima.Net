@@ -9,7 +9,7 @@ namespace Optima.Net.Extensions.Result
     public static class ResultCollectionExtension
     {
         /// <summary>
-        /// Aggregates many Result&lt;T&gt; into a Result&lt;IEnumerable&lt;T&gt;&gt;.
+        /// Aggregates many Result<T> into a Result<IEnumerable>T>>.
         /// If any element failed, the aggregate fails.
         /// Values are preserved where available.
         /// </summary>
@@ -52,7 +52,7 @@ namespace Optima.Net.Extensions.Result
         }
 
         /// <summary>
-        /// Filters a collection of Result&lt;T&gt; by a predicate.
+        /// Filters a collection of Result<T> by a predicate.
         /// Failures are preserved.
         /// Predicate failures convert successes into failures without changing the value.
         /// </summary>
@@ -78,7 +78,7 @@ namespace Optima.Net.Extensions.Result
         }
 
         /// <summary>
-        /// Flattens Result&lt;Result&lt;T&gt;&gt; into Result&lt;T&gt;.
+        /// Flattens Result<Result<T>> into Result<T></T>;.
         /// Outer failure is propagated.
         /// </summary>
         public static Result<T> Flatten<T>(
@@ -88,7 +88,7 @@ namespace Optima.Net.Extensions.Result
                 : result.Value;
 
         /// <summary>
-        /// Asynchronously filters a collection of Result&lt;T&gt; using an async predicate.
+        /// Asynchronously filters a collection of Result<T></T> using an async predicate.
         /// - Existing failures are preserved.
         /// - Successful values failing the predicate become failures ("Filtered out").
         /// - Values are preserved.
