@@ -1,18 +1,23 @@
-﻿using Optima.Net.Result;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Optima.Net.Primitives;
 
-namespace Optima.Net.Primitives
+namespace Optima.Net.Result
 {
+    /// <summary>
+    /// Convenience helpers for Result&lt;Unit&gt;
+    /// </summary>
     public static class Result
     {
-        public static Result<Unit> Ok()
-            => Result<Unit>.Ok(Unit.Value);
+        /// <summary>
+        /// Successful Result with no meaningful value.
+        /// </summary>
+        public static Result<Unit> Ok() =>
+            Result<Unit>.Ok(Unit.Value);
 
-        public static Result<Unit> Fail(string error)
-            => Result<Unit>.Fail(error);
+        /// <summary>
+        /// Failed Result with no meaningful value.
+        /// Backward-compatible legacy overload.
+        /// </summary>
+        public static Result<Unit> Fail(string error) =>
+            Result<Unit>.Fail(Unit.Value, error);
     }
 }

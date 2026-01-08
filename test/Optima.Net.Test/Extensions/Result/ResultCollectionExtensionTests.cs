@@ -21,9 +21,15 @@ namespace Optima.Net.Test.Extensions.Result
 
             // Assert
             Assert.True(aggregated.IsSuccess);
+            Assert.False(aggregated.IsFailure);
             Assert.Equal(new[] { 1, 2, 3 }, aggregated.Value.ToList());
-            Assert.Null(aggregated.Error);
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                _ = aggregated.Error;
+            });
         }
+
 
         [Fact]
         public void Sequence_WithFailures_ShouldReturnFailureWithAggregatedErrors()
@@ -32,8 +38,8 @@ namespace Optima.Net.Test.Extensions.Result
             var results = new[]
             {
                 Result<int>.Ok(10),
-                Result<int>.Fail("Bad A"),
-                Result<int>.Fail("Bad B")
+                Result<int>.Fail(5,"Bad A"),
+                Result<int>.Fail(5, "Bad B")
             };
 
             // Act
@@ -70,8 +76,8 @@ namespace Optima.Net.Test.Extensions.Result
             // Arrange
             var tasks = new[]
             {
-                Task.FromResult(Result<int>.Fail("First")),
-                Task.FromResult(Result<int>.Fail("Second"))
+                Task.FromResult(Result<int>.Fail(5, "First")),
+                Task.FromResult(Result<int>.Fail(5, "Second"))
             };
 
             // Act
@@ -128,7 +134,7 @@ namespace Optima.Net.Test.Extensions.Result
             {
                 Result<int>.Ok(1),
                 Result<int>.Ok(2),
-                Result<int>.Fail("bad")
+                Result<int>.Fail(5, "bad")
             };
 
             async Task<bool> Predicate(int x, CancellationToken _) => await Task.FromResult(x % 2 == 0);
@@ -163,7 +169,8 @@ namespace Optima.Net.Test.Extensions.Result
         public void Flatten_ShouldPropagateOuterFailure()
         {
             // Arrange
-            var outer = Result<Result<int>>.Fail("outer fail");
+            var inner = Result<int>.Fail(0, "inner fail");
+            var outer = Result<Result<int>>.Fail(inner, "outer fail");
 
             // Act
             var flat = outer.Flatten();
@@ -171,6 +178,7 @@ namespace Optima.Net.Test.Extensions.Result
             // Assert
             Assert.True(flat.IsFailure);
             Assert.Equal("outer fail", flat.Error);
+            Assert.Equal(0, flat.Value);
         }
     }
 }

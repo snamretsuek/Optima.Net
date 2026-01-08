@@ -1,4 +1,5 @@
 ﻿using Optima.Net.Extensions.Result;
+using Optima.Net.Result;
 
 namespace Optima.Net.Test
 {
@@ -23,7 +24,7 @@ namespace Optima.Net.Test
         public void Fail_ShouldCreateFailure()
         {
             var error = new TestError("Boom");
-            var result = Result<int, TestError>.Fail(error);
+            var result = Result<int, TestError>.Fail(5,error);
 
             Assert.True(result.IsFailure);
             Assert.False(result.IsSuccess);
@@ -46,7 +47,7 @@ namespace Optima.Net.Test
         public void Map_ShouldNotExecute_WhenFailure()
         {
             var error = new TestError("Failed");
-            var result = Result<int, TestError>.Fail(error)
+            var result = Result<int, TestError>.Fail(5, error)
                 .Map(x => x * 2);
 
             Assert.True(result.IsFailure);
@@ -68,7 +69,7 @@ namespace Optima.Net.Test
         [Fact]
         public void Bind_ShouldShortCircuit_WhenFailure()
         {
-            var fail = Result<int, TestError>.Fail(new TestError("Oops"));
+            var fail = Result<int, TestError>.Fail(5, new TestError("Oops"));
             var result = fail.Bind(x => Result<string, TestError>.Ok("ShouldNotRun"));
 
             Assert.True(result.IsFailure);
@@ -94,7 +95,7 @@ namespace Optima.Net.Test
         public void Match_ShouldReturnFailureValue()
         {
             var error = new TestError("Fail");
-            var result = Result<int, TestError>.Fail(error);
+            var result = Result<int, TestError>.Fail(5, error);
 
             var value = result.Match(
                 x => x * 2,

@@ -18,7 +18,11 @@ namespace Optima.Net.Test
             Assert.True(result.IsSuccess);
             Assert.False(result.IsFailure);
             Assert.Equal(value, result.Value);
-            Assert.Null(result.Error);
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                _ = result.Error;
+            });
         }
 
         [Fact]
@@ -28,32 +32,36 @@ namespace Optima.Net.Test
             var error = "Something went wrong.";
 
             // Act
-            var result = Result<string>.Fail(error);
+            var result = Result<string>.Fail("Bad",error);
 
             // Assert
             Assert.False(result.IsSuccess);
             Assert.True(result.IsFailure);
-            Assert.Equal(default(string), result.Value);
+            Assert.Equal("Bad", result.Value);
             Assert.Equal(error, result.Error);
         }
 
         [Fact]
         public void Ok_ShouldThrowNullValueException_WhenValueIsNull()
         {
-            // Act & Assert
+            // Act
             var ex = Assert.Throws<NullValueException>(() => Result<string>.Ok(null!));
+
+            // Assert
             Assert.Equal("Result<String> has no value.", ex.Message);
+            //Assert.Contains("Result", ex.Message);
+            //Assert.Contains("value", ex.Message);
         }
 
         [Fact]
         public void Fail_ShouldDefaultValueType_WhenFailed()
         {
             // Act
-            var result = Result<int>.Fail("bad things happened");
+            var result = Result<int>.Fail(5, "bad things happened");
 
             // Assert
             Assert.False(result.IsSuccess);
-            Assert.Equal(default(int), result.Value);
+            Assert.Equal(5, result.Value);
             Assert.Equal("bad things happened", result.Error);
         }
 
@@ -61,7 +69,7 @@ namespace Optima.Net.Test
         public void IsFailure_ShouldBeInverseOfIsSuccess()
         {
             var okResult = Result<bool>.Ok(true);
-            var failResult = Result<bool>.Fail("error");
+            var failResult = Result<bool>.Fail(false,"error");
 
             Assert.False(okResult.IsFailure);
             Assert.True(failResult.IsFailure);
