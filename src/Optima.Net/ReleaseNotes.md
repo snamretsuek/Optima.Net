@@ -1,5 +1,10 @@
 # Optima.Net Release Notes
 
+## v2.0.0
+
+.net 8.0 is no longer supported.  Targeting .net 10,  only.  This is potentially a breaking change.
+
+
 
 ## v1.0.8
 
