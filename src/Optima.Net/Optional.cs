@@ -7,6 +7,8 @@ namespace Optima.Net
         private readonly T value;
         public bool HasValue { get; }
 
+        public static Optional<T> Empty => none;
+
         // Singleton instance for None
         private static readonly Optional<T> none = new();
 
@@ -24,6 +26,7 @@ namespace Optima.Net
         }
 
         // Factory methods
+        [Obsolete("Use Empty instead.")]
         public static Optional<T> None() => none;
         public static Optional<T> Some(T value) => new(value);
 
