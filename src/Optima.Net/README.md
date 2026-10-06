@@ -50,7 +50,8 @@ Optional\<T\> is a utility class designed to represent a value that may or may n
 ## Overview
 
 - Some(value): Wraps a value in an Optional.  
-- None(): Represents the absence of a value.  
+- Empty: Represents the absence of a value.
+- None(): Legacy method for representing absence; retained for backward compatibility.  
 - Accessors: Value, ValueOrDefault, ValueOrNull, TryGetValue  
 - Functional operations (sync): Map, Bind, Match, Tap, Where, Or, Zip, Flatten, ToEnumerable  
 - Functional operations (async): MapAsync, BindAsync, MatchAsync, TapAsync, WhereAsync, OrAsync, ZipAsync
@@ -68,11 +69,16 @@ Optional with a value:
 Optional with no value:
 
 ```
-    var noUser = Optional<User>.None();
+    var noUser = Optional<User>.Empty;
 ```
 
-Some(value) throws ArgumentNullException if the value is null.  
-None() is a singleton representing no value.
+`Empty` is the preferred representation of an absent value. `None()` remains available for backward compatibility but is obsolete. Both represent the same singleton absence value.
+
+```
+    var legacyNoUser = Optional<User>.None(); // Obsolete: use Empty
+```
+
+Some(value) throws ArgumentNullException if the value is null.
 
 ## Accessing Values
 
@@ -694,6 +700,7 @@ Makes optionals feel native to C# pipelines.
 ## Notes
 
 - Use Optional\<T\> whenever a value might be absent, instead of null.  
+- Use `Optional<T>.Empty` to represent absence. `None()` is retained for backward compatibility and is obsolete.  
 - Functional operations (Map, Bind, Match) make pipelines readable and safe.  
 - Optional\<T\> integrates cleanly with domain-driven designs and event-driven architectures.  
 
