@@ -1,5 +1,11 @@
 # Optima.Net Release Notes
 
+## v2.0.1
+
+Added Optional<T>.Empty as the preferred representation of an absent value while retaining None() for backward compatibility.
+
+Improved Optional<T> API consistency without breaking existing consumers.
+
 ## v2.0.0
 
 .net 8.0 is no longer supported.  Targeting .net 10,  only.  This is potentially a breaking change.
