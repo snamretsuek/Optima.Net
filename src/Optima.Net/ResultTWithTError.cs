@@ -66,8 +66,7 @@ namespace Optima.Net.Result
                 isSuccess: false,
                 hasValue: true);
 
-        // FAILURE (backward-compatible legacy form)
-        [Obsolete("Use Fail(value, error) to preserve the value on failure.")]
+       
         public static Result<T, TError> Fail(TError error) =>
             new Result<T, TError>(
                 default!,

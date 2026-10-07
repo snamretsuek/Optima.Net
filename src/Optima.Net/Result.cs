@@ -28,8 +28,7 @@ namespace Optima.Net.Result
         public static Result<T> Fail(T value, string error) =>
             new(Result<T, string>.Fail(value, error));
 
-        // FAILURE (legacy, backward-compatible)
-        [Obsolete("Use Fail(value, error) to preserve the value on failure.")]
+ 
         public static Result<T> Fail(string error) =>
             new(Result<T, string>.Fail(error));
 
