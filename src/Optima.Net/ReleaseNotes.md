@@ -1,5 +1,8 @@
 # Optima.Net Release Notes
 
+## v2.0.2
+Removed Obsolete annotation from  Result<T>.Fail(string error) as it is still a fully flexible and valid overload for Result<T> construction.  The Obsolete annotation was added in v1.0.8 to encourage the use of Result<T>.Fail(T value, string error) overload, but it was determined that this iswas premature and the Obsolete annotation was removed.
+
 ## v2.0.1
 
 Added Optional<T>.Empty as the preferred representation of an absent value while retaining None() for backward compatibility.
