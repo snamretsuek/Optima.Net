@@ -1,6 +1,6 @@
 # Optima.Net Release Notes
 
-## v2.0.2
+## v2.0.3
 
 Added fluent validation extensions for `Result<T>` and `Result<T, TError>`, allowing developers to compose validation rules without manually checking each intermediate result.
 
