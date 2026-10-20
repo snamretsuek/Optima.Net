@@ -11,7 +11,7 @@
             Func<T, TResult> selector)
         {
             if (!optional.HasValue)
-                return Optional<TResult>.None();
+                return Optional<TResult>.Empty;
 
             return Optional<TResult>.Some(selector(optional.Value));
         }
@@ -26,11 +26,11 @@
             Func<T, TIntermediate, TResult> projector)
         {
             if (!optional.HasValue)
-                return Optional<TResult>.None();
+                return Optional<TResult>.Empty;
 
             var intermediate = binder(optional.Value);
             if (!intermediate.HasValue)
-                return Optional<TResult>.None();
+                return Optional<TResult>.Empty;
 
             return Optional<TResult>.Some(projector(optional.Value, intermediate.Value));
         }
@@ -44,11 +44,11 @@
             Func<T, bool> predicate)
         {
             if (!optional.HasValue)
-                return Optional<T>.None();
+                return Optional<T>.Empty;
 
             return predicate(optional.Value)
                 ? optional
-                : Optional<T>.None();
+                : Optional<T>.Empty;
         }
     }
 }

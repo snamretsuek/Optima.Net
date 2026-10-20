@@ -17,7 +17,7 @@ namespace Optima.Net.Test.Extensions
         [Fact]
         public void Select_ShouldReturnNone_WhenNone()
         {
-            var none = Optional<int>.None();
+            var none = Optional<int>.Empty;
             var result = none.Select(x => x * 2);
 
             Assert.False(result.HasValue);
@@ -40,7 +40,7 @@ namespace Optima.Net.Test.Extensions
         [Fact]
         public void SelectMany_ShouldReturnNone_WhenOuterNone()
         {
-            var none = Optional<int>.None();
+            var none = Optional<int>.Empty;
 
             var result = none.SelectMany(
                 x => Optional<int>.Some(x + 2),
@@ -56,7 +56,7 @@ namespace Optima.Net.Test.Extensions
             var some = Optional<int>.Some(3);
 
             var result = some.SelectMany(
-                x => Optional<int>.None(),
+                x => Optional<int>.Empty,
                 (x, y) => x * y
             );
 
@@ -85,7 +85,7 @@ namespace Optima.Net.Test.Extensions
         [Fact]
         public void Where_ShouldReturnNone_WhenOptionalIsNone()
         {
-            var none = Optional<int>.None();
+            var none = Optional<int>.Empty;
             var result = none.Where(x => x > 0);
 
             Assert.False(result.HasValue);
