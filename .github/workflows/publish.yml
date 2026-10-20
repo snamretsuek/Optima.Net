@@ -15,11 +15,11 @@ jobs:
     steps:
       # Checkout the repository
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # Setup .NET SDK
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '8.0.x'
 
@@ -41,7 +41,7 @@ jobs:
 
       # Upload the .nupkg as an artifact for manual download
       - name: Upload NuGet package artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Optima.Net-packages
           path: ./nupkgs/*.nupkg

@@ -29,6 +29,7 @@ The support would be greatly appreciated!
   - [Transforming Values (Map / MapAsync)](#transforming-values-map--mapasync)
   - [Side Effects (Tap / TapAsync / OnFailure)](#side-effects-tap--tapasync--onfailure)
   - [Pattern Matching (Match / MatchAsync)](#pattern-matching-match--matchasync)
+  - [Fluent validation with Result<T>](#fluent-validation-with-resultt)
 - [ResultCollectionExtension — Working with Collections of Results](#resultcollectionextension--working-with-collections-of-results)
 - [Aggregating Multiple Results. Sequence](#aggregating-multiple-results-sequence)
 - [ResultLinqExtensions — LINQ Support for Result\<T\>](#resultlinqextensions--linq-support-for-resultt)
@@ -39,6 +40,7 @@ The support would be greatly appreciated!
   - [Mapping and binding](#mapping-and-binding)
   - [Ensure](#ensure)
   - [Async Ensure](#async-ensure)
+  - [Fluent validation with typed errors](#fluent-validation-with-typed-errors)
   - [Pattern matching](#pattern-matching-1)
   - [Domain error modeling](#domain-error-modeling)
   - [Typical usage](#typical-usage)
@@ -1056,6 +1058,170 @@ Console.WriteLine(message);
 Handled failure: Network unavailable
 ```
 
+## Fluent validation with Result<T>
+
+Import the result type and its extensions:
+
+```csharp
+using Optima.Net.Result;
+using Optima.Net.Extensions.Result;
+```
+
+Use `Then` and `Ensure` to stop at the first failure. Use `ValidateAll` when independent field checks should all run and report their errors together.
+
+### Stop at the first validation failure
+
+The examples below use this model and four validators:
+
+```csharp
+public record Customer(string Name, string Email, string Phone, string Address);
+
+static Result<Customer> ValidateName(Customer customer) =>
+    Result<Customer>.Ok(customer)
+        .Ensure(c => !string.IsNullOrWhiteSpace(c.Name), "Name is required.");
+
+static Result<Customer> ValidateEmail(Customer customer) =>
+    Result<Customer>.Ok(customer)
+        .Ensure(c => !string.IsNullOrWhiteSpace(c.Email), "Email is required.");
+
+static Result<Customer> ValidatePhone(Customer customer) =>
+    Result<Customer>.Ok(customer)
+        .Ensure(c => !string.IsNullOrWhiteSpace(c.Phone), "Phone is required.");
+
+static Result<Customer> ValidateAddress(Customer customer) =>
+    Result<Customer>.Ok(customer)
+        .Ensure(c => !string.IsNullOrWhiteSpace(c.Address), "Address is required.");
+```
+
+Chain the validators without checking each result individually:
+
+```csharp
+var customer = new Customer("", "", "", "");
+
+var result = Result<Customer>.Ok(customer)
+    .Then(ValidateName)
+    .Then(ValidateEmail)
+    .Then(ValidatePhone)
+    .Then(ValidateAddress);
+
+Console.WriteLine(result.Match(
+    onSuccess: c => $"Customer {c.Name} is valid.",
+    onFailure: error => error));
+```
+
+The output is `Name is required.` The remaining validators do not run. An existing failure is returned unchanged without accessing its value.
+
+### Collect all field validation errors
+
+Use the same four validators with `ValidateAll`:
+
+```csharp
+var customer = new Customer("", "", "", "");
+
+var result = Result<Customer>.Ok(customer)
+    .ValidateAll(
+        ValidateName,
+        ValidateEmail,
+        ValidatePhone,
+        ValidateAddress);
+
+Console.WriteLine(result.Match(
+    onSuccess: c => $"Customer {c.Name} is valid.",
+    onFailure: error => error));
+```
+
+Output:
+
+```text
+Name is required.
+Email is required.
+Phone is required.
+Address is required.
+```
+
+All four validators run in order against the original customer. Failed error messages are joined with `Environment.NewLine`. If all validators succeed, the original success is returned.
+
+You can combine both approaches. A prerequisite can stop the pipeline before independent checks run:
+
+```csharp
+var result = Result<Customer>.Ok(customer)
+    .Ensure(c => c.Name.Length <= 100, "Name must not exceed 100 characters.")
+    .ValidateAll(
+        ValidateName,
+        ValidateEmail,
+        ValidatePhone,
+        ValidateAddress);
+```
+
+This example assumes the customer and its string properties are non-null. Validate nullable input before constructing a successful result when the result type rejects null success values.
+
+### Asynchronous validation with string errors
+
+`ThenAsync`, `EnsureAsync` and `ValidateAllAsync` support asynchronous validators, with overloads that accept cancellation tokens. Use asynchronous validation for database or service calls; keep simple in-memory checks synchronous.
+
+The following example assumes `ValidateNameAsync`, `ValidateEmailAsync`, `ValidatePhoneAsync` and `ValidateAddressAsync` are application methods with this signature:
+
+```csharp
+Task<Result<Customer>> ValidateEmailAsync(
+    Customer customer,
+    CancellationToken cancellationToken);
+```
+
+Collect all asynchronous validation failures:
+
+```csharp
+var result = await Result<Customer>.Ok(customer)
+    .ValidateAllAsync(
+        cancellationToken,
+        ValidateNameAsync,
+        ValidateEmailAsync,
+        ValidatePhoneAsync,
+        ValidateAddressAsync);
+```
+
+For validators that do not accept a token, use the overload without `cancellationToken`:
+
+```csharp
+var result = await Result<Customer>.Ok(customer)
+    .ValidateAllAsync(
+        c => ValidateNameAsync(c, CancellationToken.None),
+        c => ValidateEmailAsync(c, CancellationToken.None),
+        c => ValidatePhoneAsync(c, CancellationToken.None),
+        c => ValidateAddressAsync(c, CancellationToken.None));
+```
+
+To stop at the first asynchronous failure, await each result before continuing:
+
+```csharp
+var result = await Result<Customer>.Ok(customer)
+    .ThenAsync(ValidateNameAsync, cancellationToken);
+
+result = await result.ThenAsync(ValidateEmailAsync, cancellationToken);
+result = await result.ThenAsync(ValidatePhoneAsync, cancellationToken);
+result = await result.ThenAsync(ValidateAddressAsync, cancellationToken);
+```
+
+For an asynchronous condition, pass a function returning `Task<bool>`. Here, `emailService.IsAvailableAsync` represents an application service:
+
+```csharp
+var result = await Result<Customer>.Ok(customer)
+    .EnsureAsync(
+        (c, token) => emailService.IsAvailableAsync(c.Email, token),
+        "Email is already registered.",
+        cancellationToken);
+```
+
+### Validation execution rules
+
+- `Then` and `Ensure`, including their async versions, skip validation after an existing failure.
+- `ValidateAll` and `ValidateAllAsync` skip their validators if the incoming result has already failed.
+- Within `ValidateAll`, every validator runs unless an exception stops execution. `ValidateAllAsync` also stops for cancellation.
+- Async validators run sequentially, not in parallel. Errors retain validation order.
+- Aggregation retains the original value and ignores replacement values returned by validators. Use independent checks that do not modify the input.
+- Exceptions are not converted into validation errors. Exceptions and cancellation propagate, and partial aggregated errors are not returned.
+- An empty validators array returns the original result.
+- These extensions operate on `Result<T>`. Await a returned `Task<Result<T>>` before applying the next extension.
+
 ## ResultCollectionExtension — Working with Collections of Results
 
 **namespace Optima.Net.Extensions.Result**
@@ -1462,19 +1628,173 @@ var r = Result<int, OrderError>.Ok(10)
 
 ```
 Result<User, IUserError>.Ok(user)
-    .Ensure(u => u.IsActive, () => new UserInactive());
+    .Ensure(u => u.IsActive, new UserInactive());
 ```
 
-If predicate is false, returns a failure using the error factory. If already failure, it stays failure.
+If predicate is false, returns a failure using the supplied error value. If already failure, it stays failure.
 
 ## Async Ensure
 
 ```
 await Result<User, IUserError>.Ok(user)
-    .EnsureAsync(async u => await repo.Exists(u.Id), () => new UserNotFound(u.Id));
+    .EnsureAsync(async u => await repo.Exists(u.Id), new UserNotFound(user.Id));
 ```
 
 Cancellation token overloads are available in the extensions.
+
+## Fluent validation with typed errors
+
+The same validation methods are available for `Result<T, TError>`. Import `Optima.Net.Result` and `Optima.Net.Extensions.Result`.
+
+`Then` and `Ensure` stop at the first failure. `ValidateAll` accepts a `combineErrors` function because the library cannot assume how an arbitrary `TError` should represent multiple errors.
+
+### Define structured field errors
+
+This example uses the `Customer` model from the string error examples and keeps errors as a collection throughout the pipeline:
+
+```csharp
+using System.Collections.Generic;
+using System.Linq;
+
+public record ValidationError(string Field, string Message);
+
+static Result<Customer, IReadOnlyList<ValidationError>> ValidateTypedName(
+    Customer customer) =>
+    Result<Customer, IReadOnlyList<ValidationError>>.Ok(customer)
+        .Ensure(
+            c => !string.IsNullOrWhiteSpace(c.Name),
+            new[] { new ValidationError("Name", "Name is required.") });
+
+static Result<Customer, IReadOnlyList<ValidationError>> ValidateTypedEmail(
+    Customer customer) =>
+    Result<Customer, IReadOnlyList<ValidationError>>.Ok(customer)
+        .Ensure(
+            c => !string.IsNullOrWhiteSpace(c.Email),
+            new[] { new ValidationError("Email", "Email is required.") });
+
+static Result<Customer, IReadOnlyList<ValidationError>> ValidateTypedPhone(
+    Customer customer) =>
+    Result<Customer, IReadOnlyList<ValidationError>>.Ok(customer)
+        .Ensure(
+            c => !string.IsNullOrWhiteSpace(c.Phone),
+            new[] { new ValidationError("Phone", "Phone is required.") });
+
+static Result<Customer, IReadOnlyList<ValidationError>> ValidateTypedAddress(
+    Customer customer) =>
+    Result<Customer, IReadOnlyList<ValidationError>>.Ok(customer)
+        .Ensure(
+            c => !string.IsNullOrWhiteSpace(c.Address),
+            new[] { new ValidationError("Address", "Address is required.") });
+```
+
+### Stop at the first typed failure
+
+```csharp
+var result = Result<Customer, IReadOnlyList<ValidationError>>.Ok(customer)
+    .Then(ValidateTypedName)
+    .Then(ValidateTypedEmail)
+    .Then(ValidateTypedPhone)
+    .Then(ValidateTypedAddress);
+```
+
+The first failed validator supplies the final error collection. Subsequent validators do not run.
+
+### Aggregate typed validation errors
+
+```csharp
+var customer = new Customer("", "", "", "");
+
+var result = Result<Customer, IReadOnlyList<ValidationError>>.Ok(customer)
+    .ValidateAll(
+        errors => errors.SelectMany(group => group).ToArray(),
+        ValidateTypedName,
+        ValidateTypedEmail,
+        ValidateTypedPhone,
+        ValidateTypedAddress);
+
+if (result.IsFailure)
+{
+    foreach (var error in result.Error)
+        Console.WriteLine($"{error.Field}: {error.Message}");
+}
+```
+
+Output:
+
+```text
+Name: Name is required.
+Email: Email is required.
+Phone: Phone is required.
+Address: Address is required.
+```
+
+Here, `TError` is `IReadOnlyList<ValidationError>`. The combining function receives a list of those collections and flattens them into one collection. It is called once when any validators fail, including when only one fails. It is not called when all validators pass or the incoming result has already failed.
+
+For `Result<Customer, string>`, supply a string combiner instead. In this example, each supplied validator must return `Result<Customer, string>`:
+
+```csharp
+var result = Result<Customer, string>.Ok(customer)
+    .ValidateAll(
+        errors => string.Join(Environment.NewLine, errors),
+        c => Result<Customer, string>.Ok(c)
+            .Ensure(x => !string.IsNullOrWhiteSpace(x.Name), "Name is required."),
+        c => Result<Customer, string>.Ok(c)
+            .Ensure(x => !string.IsNullOrWhiteSpace(x.Email), "Email is required."));
+```
+
+### Asynchronous validation with typed errors
+
+Assume the four asynchronous typed validators have the following signature:
+
+```csharp
+Task<Result<Customer, IReadOnlyList<ValidationError>>> ValidateTypedEmailAsync(
+    Customer customer,
+    CancellationToken cancellationToken);
+```
+
+Aggregate their errors with cancellation support:
+
+```csharp
+var result = await
+    Result<Customer, IReadOnlyList<ValidationError>>.Ok(customer)
+        .ValidateAllAsync(
+            errors => errors.SelectMany(group => group).ToArray(),
+            cancellationToken,
+            ValidateTypedNameAsync,
+            ValidateTypedEmailAsync,
+            ValidateTypedPhoneAsync,
+            ValidateTypedAddressAsync);
+```
+
+The overload without a cancellation token accepts validators returning `Task<Result<T, TError>>` with only the value parameter:
+
+```csharp
+var result = await
+    Result<Customer, IReadOnlyList<ValidationError>>.Ok(customer)
+        .ValidateAllAsync(
+            errors => errors.SelectMany(group => group).ToArray(),
+            c => ValidateTypedNameAsync(c, CancellationToken.None),
+            c => ValidateTypedEmailAsync(c, CancellationToken.None),
+            c => ValidateTypedPhoneAsync(c, CancellationToken.None),
+            c => ValidateTypedAddressAsync(c, CancellationToken.None));
+```
+
+Use `ThenAsync` for dependent checks and `EnsureAsync` for an asynchronous condition:
+
+```csharp
+var result = await
+    Result<Customer, IReadOnlyList<ValidationError>>.Ok(customer)
+        .ThenAsync(ValidateTypedEmailAsync, cancellationToken);
+
+result = await result.EnsureAsync(
+    (c, token) => emailService.IsAvailableAsync(c.Email, token),
+    new[] { new ValidationError("Email", "Email is already registered.") },
+    cancellationToken);
+```
+
+The execution rules are the same as for string errors: validators run sequentially, existing failures skip validation, aggregation preserves the original value, and exceptions or cancellation propagate. The combining function is synchronous; exceptions it throws also propagate.
+
+Await each `Task<Result<T, TError>>` before applying the next result extension. Cancellation is checked before each invoked validator and passed to it. An existing failure or empty validator array is returned without checking cancellation.
 
 ## Pattern matching
 

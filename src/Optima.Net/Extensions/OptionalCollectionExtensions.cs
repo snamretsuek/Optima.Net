@@ -25,10 +25,10 @@
             var tasks = optionals.Select(async o =>
             {
                 if (!o.HasValue)
-                    return Optional<T>.None();
+                    return Optional<T>.Empty;
 
                 var keep = await predicate(o.Value);
-                return keep ? o : Optional<T>.None();
+                return keep ? o : Optional<T>.Empty;
             });
 
             var results = await Task.WhenAll(tasks);
@@ -42,10 +42,10 @@
             var tasks = optionals.Select(async o =>
             {
                 if (!o.HasValue)
-                    return Optional<T>.None();
+                    return Optional<T>.Empty;
 
                 var keep = await predicate(o.Value,default);
-                return keep ? o : Optional<T>.None();
+                return keep ? o : Optional<T>.Empty;
             });
 
             var results = await Task.WhenAll(tasks);

@@ -7,8 +7,8 @@ namespace Optima.Net.Tests
         [Fact]
         public void None_ShouldReturnSingletonNone()
         {
-            var none1 = Optional<int>.None();
-            var none2 = Optional<int>.None();
+            var none1 = Optional<int>.Empty;
+            var none2 = Optional<int>.Empty;
 
             Assert.False(none1.HasValue);
             Assert.Same(none1, none2); // Singleton instance
@@ -32,7 +32,7 @@ namespace Optima.Net.Tests
         [Fact]
         public void Value_WhenNone_ShouldThrowNullValueException()
         {
-            var none = Optional<int>.None();
+            var none = Optional<int>.Empty;
 
             Assert.Throws<NullValueException>(() => _ = none.Value);
         }
@@ -40,7 +40,7 @@ namespace Optima.Net.Tests
         [Fact]
         public void ValueOrDefault_ShouldReturnDefault_WhenNone()
         {
-            var none = Optional<int>.None();
+            var none = Optional<int>.Empty;
 
             int result = none.ValueOrDefault(99);
 
@@ -60,7 +60,7 @@ namespace Optima.Net.Tests
         [Fact]
         public void ValueOrNull_ShouldReturnNull_WhenNone()
         {
-            var none = Optional<string>.None();
+            var none = Optional<string>.Empty;
 
             string? result = none.ValueOrNull();
 
@@ -91,7 +91,7 @@ namespace Optima.Net.Tests
         [Fact]
         public void Map_ShouldReturnNone_WhenNone()
         {
-            var none = Optional<int>.None();
+            var none = Optional<int>.Empty;
 
             var result = none.Map(x => x * 2);
 
@@ -112,7 +112,7 @@ namespace Optima.Net.Tests
         [Fact]
         public void Bind_ShouldReturnNone_WhenNone()
         {
-            var none = Optional<int>.None();
+            var none = Optional<int>.Empty;
 
             var result = none.Bind(x => Optional<string>.Some($"Value:{x}"));
 
@@ -135,7 +135,7 @@ namespace Optima.Net.Tests
         [Fact]
         public void Match_ShouldReturnOnNone_WhenNone()
         {
-            var none = Optional<int>.None();
+            var none = Optional<int>.Empty;
 
             var result = none.Match(
                 onSome: x => x * 2,
@@ -151,8 +151,8 @@ namespace Optima.Net.Tests
             var a = Optional<int>.Some(5);
             var b = Optional<int>.Some(5);
             var c = Optional<int>.Some(10);
-            var none1 = Optional<int>.None();
-            var none2 = Optional<int>.None();
+            var none1 = Optional<int>.Empty;
+            var none2 = Optional<int>.Empty;
 
             Assert.True(a.Equals(b));
             Assert.False(a.Equals(c));
@@ -165,7 +165,7 @@ namespace Optima.Net.Tests
         public void GetHashCode_ShouldMatchValueOrZero()
         {
             var some = Optional<int>.Some(42);
-            var none = Optional<int>.None();
+            var none = Optional<int>.Empty;
 
             Assert.Equal(42.GetHashCode(), some.GetHashCode());
             Assert.Equal(0, none.GetHashCode());
@@ -175,7 +175,7 @@ namespace Optima.Net.Tests
         public void ToString_ShouldReturnCorrectFormat()
         {
             var some = Optional<int>.Some(10);
-            var none = Optional<int>.None();
+            var none = Optional<int>.Empty;
 
             Assert.Equal("Some(10)", some.ToString());
             Assert.Equal("None", none.ToString());

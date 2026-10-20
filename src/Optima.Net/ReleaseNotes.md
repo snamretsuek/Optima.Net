@@ -1,6 +1,22 @@
 # Optima.Net Release Notes
 
 ## v2.0.2
+
+Added fluent validation extensions for `Result<T>` and `Result<T, TError>`, allowing developers to compose validation rules without manually checking each intermediate result.
+
+- `Then` chains validators and stops at the first failure.
+- `Ensure` checks a condition and returns the supplied error when it fails.
+- `ValidateAll` executes all independent validators and aggregates their failures, allowing applications to report multiple field errors in one response.
+- `ThenAsync`, `EnsureAsync` and `ValidateAllAsync` support asynchronous validation, including cancellation token overloads.
+- `OnFailureAsync` supports asynchronous failure handling, such as logging.
+
+For `Result<T>`, aggregated errors are combined into a newline-separated string. For `Result<T, TError>`, a developer-supplied combining function controls how typed errors are aggregated, including structured field error collections.
+
+Asynchronous validators execute sequentially in the supplied order. Aggregation preserves the original input value. Existing failures skip subsequent validation, while exceptions and cancellation propagate rather than being converted into validation errors.
+
+Added XML documentation and README examples covering both validation strategies, typed errors and asynchronous usage.
+
+## v2.0.2
 Removed Obsolete annotation from  Result<T>.Fail(string error) as it is still a fully flexible and valid overload for Result<T> construction.  The Obsolete annotation was added in v1.0.8 to encourage the use of Result<T>.Fail(T value, string error) overload, but it was determined that this iswas premature and the Obsolete annotation was removed.
 
 ## v2.0.1
