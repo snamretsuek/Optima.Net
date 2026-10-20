@@ -68,11 +68,11 @@ namespace Optima.Net.Extensions
         public static Optional<T> Where<T>(this Optional<T> optional, Func<T, bool> predicate)
         {
             if (!optional.HasValue)
-                return Optional<T>.None();
+                return Optional<T>.Empty;
 
             return predicate(optional.Value)
                 ? optional
-                : Optional<T>.None();
+                : Optional<T>.Empty;
         }
 
         /// <summary>
@@ -85,10 +85,10 @@ namespace Optima.Net.Extensions
             Func<T, Task<bool>> predicate)
         {
             if (!optional.HasValue)
-                return Optional<T>.None();
+                return Optional<T>.Empty;
 
             var result = await predicate(optional.Value);
-            return result ? optional : Optional<T>.None();
+            return result ? optional : Optional<T>.Empty;
         }
 
         public static async Task<Optional<T>> WhereAsync<T>(
@@ -96,10 +96,10 @@ namespace Optima.Net.Extensions
             Func<T, CancellationToken, Task<bool>> predicate, CancellationToken cancellationToken=default)
         {
             if (!optional.HasValue)
-                return Optional<T>.None();
+                return Optional<T>.Empty;
 
             var result = await predicate(optional.Value,cancellationToken);
-            return result ? optional : Optional<T>.None();
+            return result ? optional : Optional<T>.Empty;
         }
 
         /// <summary>
@@ -246,7 +246,7 @@ namespace Optima.Net.Extensions
             ArgumentNullException.ThrowIfNull(asyncMapper);
 
             if (!optional.HasValue)
-                return Optional<TResult>.None();
+                return Optional<TResult>.Empty;
 
             var result = await asyncMapper(optional.Value).ConfigureAwait(false);
             return Optional<TResult>.Some(result);
@@ -259,7 +259,7 @@ namespace Optima.Net.Extensions
             ArgumentNullException.ThrowIfNull(asyncMapper);
 
             if (!optional.HasValue)
-                return Optional<TResult>.None();
+                return Optional<TResult>.Empty;
 
             var result = await asyncMapper(optional.Value,cancellationToken).ConfigureAwait(false);
             return Optional<TResult>.Some(result);
@@ -275,7 +275,7 @@ namespace Optima.Net.Extensions
             ArgumentNullException.ThrowIfNull(asyncBinder);
 
             if (!optional.HasValue)
-                return Optional<TResult>.None();
+                return Optional<TResult>.Empty;
 
             return await asyncBinder(optional.Value).ConfigureAwait(false);
         }
@@ -287,7 +287,7 @@ namespace Optima.Net.Extensions
             ArgumentNullException.ThrowIfNull(asyncBinder);
 
             if (!optional.HasValue)
-                return Optional<TResult>.None();
+                return Optional<TResult>.Empty;
 
             return await asyncBinder(optional.Value,cancellationToken).ConfigureAwait(false);
         }
@@ -320,7 +320,7 @@ namespace Optima.Net.Extensions
             ArgumentNullException.ThrowIfNull(resultSelector);
 
             if (!first.HasValue || !second.HasValue)
-                return Optional<TResult>.None();
+                return Optional<TResult>.Empty;
 
             return Optional<TResult>.Some(resultSelector(first.Value, second.Value));
         }
@@ -342,7 +342,7 @@ namespace Optima.Net.Extensions
             var second = await secondTask.ConfigureAwait(false);
 
             if (!first.HasValue || !second.HasValue)
-                return Optional<TResult>.None();
+                return Optional<TResult>.Empty;
 
             return Optional<TResult>.Some(resultSelector(first.Value, second.Value));
         }
@@ -362,7 +362,7 @@ namespace Optima.Net.Extensions
             var second = await secondTask.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             if (!first.HasValue || !second.HasValue)
-                return Optional<TResult>.None();
+                return Optional<TResult>.Empty;
 
             cancellationToken.ThrowIfCancellationRequested();
 
