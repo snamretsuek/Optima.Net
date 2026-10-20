@@ -11,7 +11,7 @@ namespace Optima.Net.Test.Extensions
             {
                 Optional<int>.Some(1),
                 Optional<int>.Some(2),
-                Optional<int>.None(),
+                Optional<int>.Empty,
                 Optional<int>.Some(3)
             };
 
@@ -28,7 +28,7 @@ namespace Optima.Net.Test.Extensions
             {
                 Optional<int>.Some(1),
                 Optional<int>.Some(2),
-                Optional<int>.None(),
+                Optional<int>.Empty,
                 Optional<int>.Some(3)
             };
 
@@ -49,7 +49,7 @@ namespace Optima.Net.Test.Extensions
             {
                 Optional<int>.Some(5),
                 Optional<int>.Some(6),
-                Optional<int>.None(),
+                Optional<int>.Empty,
                 Optional<int>.Some(7)
             };
 
@@ -71,7 +71,7 @@ namespace Optima.Net.Test.Extensions
             var optionals = new[]
             {
                 Optional<string>.Some("a"),
-                Optional<string>.None(),
+                Optional<string>.Empty,
                 Optional<string>.Some("b")
             };
 
@@ -89,7 +89,7 @@ namespace Optima.Net.Test.Extensions
             {
                 Optional<int>.Some(1),
                 Optional<int>.Some(2),
-                Optional<int>.None()
+                Optional<int>.Empty
             };
 
             var result = optionals.Where(x => x > 100).ToList();
@@ -104,7 +104,7 @@ namespace Optima.Net.Test.Extensions
             {
                 Optional<int>.Some(1),
                 Optional<int>.Some(2),
-                Optional<int>.None()
+                Optional<int>.Empty
             };
 
             var result = (await optionals.WhereAsync(async x =>
@@ -121,8 +121,8 @@ namespace Optima.Net.Test.Extensions
         {
             var optionals = new[]
             {
-                Optional<int>.None(),
-                Optional<int>.None()
+                Optional<int>.Empty,
+                Optional<int>.Empty
             };
 
             var result = optionals.Flatten().ToList();

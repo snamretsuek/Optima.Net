@@ -52,13 +52,13 @@ namespace Optima.Net
         public Optional<TResult> Map<TResult>(Func<T, TResult> mapper)
         {
             ArgumentNullException.ThrowIfNull(mapper, nameof(mapper));
-            return HasValue ? Optional<TResult>.Some(mapper(value)) : Optional<TResult>.None();
+            return HasValue ? Optional<TResult>.Some(mapper(value)) : Optional<TResult>.Empty;
         }
 
         public Optional<TResult> Bind<TResult>(Func<T, Optional<TResult>> binder)
         {
             ArgumentNullException.ThrowIfNull(binder,nameof(binder));
-            return HasValue ? binder(value) : Optional<TResult>.None();
+            return HasValue ? binder(value) : Optional<TResult>.Empty;
         }
 
         public TResult Match<TResult>(Func<T, TResult> onSome, Func<TResult> onNone)

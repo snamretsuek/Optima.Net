@@ -16,7 +16,7 @@ namespace Optima.Net.Test.Extensions
         [Fact]
         public void ValueOrThrow_ShouldThrowCustomMessage_WhenNone()
         {
-            var none = Optional<int>.None();
+            var none = Optional<int>.Empty;
             var ex = Assert.Throws<NullValueException>(() => none.ValueOrThrow("Custom message"));
             Assert.Equal("Custom message", ex.Message);
         }
@@ -103,7 +103,7 @@ namespace Optima.Net.Test.Extensions
         [Fact]
         public void Or_ShouldReturnFallback_WhenNone()
         {
-            var none = Optional<int>.None();
+            var none = Optional<int>.Empty;
             var fallback = Optional<int>.Some(2);
             var result = none.Or(fallback);
             Assert.Equal(fallback, result);
@@ -112,7 +112,7 @@ namespace Optima.Net.Test.Extensions
         [Fact]
         public async Task OrAsync_ShouldReturnFallback_WhenNone()
         {
-            var none = Optional<int>.None();
+            var none = Optional<int>.Empty;
             var result = await none.OrAsync(async () =>
             {
                 await Task.Delay(1);
@@ -139,7 +139,7 @@ namespace Optima.Net.Test.Extensions
         [Fact]
         public async Task MatchAsync_ShouldCallOnNone_WhenNone()
         {
-            var none = Optional<int>.None();
+            var none = Optional<int>.Empty;
             var called = false;
             await none.MatchAsync(async x => { Assert.Fail("Should not call onSome"); }, async () =>
             {
@@ -190,7 +190,7 @@ namespace Optima.Net.Test.Extensions
         [Fact]
         public void TryGetValue_ShouldReturnFalse_WhenNone()
         {
-            var none = Optional<int>.None();
+            var none = Optional<int>.Empty;
             var success = none.TryGetValue(out var value);
             Assert.False(success);
             Assert.Equal(default, value);
@@ -227,7 +227,7 @@ namespace Optima.Net.Test.Extensions
         [Fact]
         public void ToEnumerable_ShouldReturnEmpty_WhenNone()
         {
-            var none = Optional<string>.None();
+            var none = Optional<string>.Empty;
             var result = none.ToEnumerable().ToList();
             Assert.Empty(result);
         }
